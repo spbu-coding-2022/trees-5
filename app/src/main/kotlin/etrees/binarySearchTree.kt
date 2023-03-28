@@ -14,7 +14,12 @@ open class BinarySearchTree() {
     }
 
     fun findByKey(key: Int): Any? {
-        TODO()
+        return when {
+            this.key == null -> null
+            this.key!! > key -> left?.findByKey(key)
+            this.key!! < key -> right?.findByKey(key)
+            else -> this.value
+        }
     }
 
     open fun insert(key: Int, value: Any?) {
