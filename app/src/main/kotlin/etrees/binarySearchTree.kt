@@ -41,11 +41,75 @@ open class BinarySearchTree<K: Comparable<K>>() {
         }
     }
 
-    open fun remove(key: Int) {
-        TODO()
+    private fun findMinThanCurrent(currentTree: BinarySearchTree<K>): BinarySearchTree<K> {
+        return when (currentTree.left) {
+            null -> currentTree
+            else -> findMinThanCurrent(currentTree.left!!)
+        }
+    }
+
+    open fun remove(key: K) {
+        if (this.key == null) return
+
+        if (this.key!! > key)
+            this.left?.remove(key)
+        else if (this.key!! < key)
+            this.right?.remove(key)
+        else if (this.left != null && this.right != null) {
+            val minimumMore = findMinThanCurrent(this.right!!)
+            this.key = minimumMore.key
+            this.value = minimumMore.value
+            this.right!!.remove(this.key!!)
+        }
+        else {
+            if (this.left != null) {
+                if (this.parent == null) {
+                    this.key = this.left!!.key
+                    this.value = this.left!!.value
+                    val tmp = this.left!!.right
+                    this.left = this.left!!.left
+                    this.right = tmp
+                } else {
+                    this.left!!.parent = this.parent
+                    if (this.parent!!.left!!.key == this.key) {
+                        this.parent!!.left = this.left
+                    } else {
+                        this.parent!!.right = this.left
+                    }
+                }
+            } else if (this.right != null) {
+                if (this.parent == null) {
+                    this.key = this.right!!.key
+                    this.value = this.right!!.value
+                    val tmp = this.right!!.right
+                    this.left = this.right!!.left
+                    this.right = tmp
+                } else {
+                    this.right!!.parent = this.parent
+                    if (this.parent!!.left!!.key == this.key) {
+                        this.parent!!.left = this.right
+                    } else {
+                        this.parent!!.right = this.right
+                    }
+                }
+            } else {
+                if (this.parent == null) {
+                    this.key = null
+                    this.value = null
+                } else {
+                    if (this.parent!!.left != null && this.parent!!.left == this) {
+                        this.parent!!.left = null
+                    } else {
+                        this.parent!!.right = null
+                    }
+                }
+            }
+        }
     }
 
     fun showOrderKeys() {
-        TODO()
+        left?.showOrderKeys()
+        this.key?. let {print("$it ") }
+        right?.showOrderKeys()
     }
 }
