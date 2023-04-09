@@ -1,29 +1,14 @@
 package etrees
 
-open class BinarySearchTree<K: Comparable<K>>() {
-
-    private var key: K? = null
-    private var value: Any? = null
-    private var left: BinarySearchTree<K>? = null
-    private var right: BinarySearchTree<K>? = null
-
-    fun findByKey(key: K): Any? {
-        val currentKey = this.key
-        return when {
-            currentKey == null -> null
-            currentKey > key -> left?.findByKey(key)
-            currentKey < key -> right?.findByKey(key)
-            else -> this.value
-        }
-    }
-
-    open fun insert(key: K, value: Any?) {
+open class BinarySearchTree<K : Comparable<K>> : AbstractBST<K, BinarySearchTree<K>>() {
+    fun insert(key: K, value: Any?) {
         val currentKey = this.key
         when {
             currentKey == null || currentKey == key -> {
                 this.key = key
                 this.value = value
             }
+
             currentKey > key -> {
                 this.left = this.left ?: BinarySearchTree()
                 this.left?.insert(key, value)
@@ -43,9 +28,6 @@ open class BinarySearchTree<K: Comparable<K>>() {
         }
     }
 
-    protected fun greatThan(x: K?, y: K?): Boolean = !(x == null || y == null || y >= x)
-    protected fun lessThan(x: K?, y: K?): Boolean = !(x == null || y == null || y <= x)
-
     private fun copyFields(tree: BinarySearchTree<K>) {
         this.key = tree.key
         this.value = tree.value
@@ -55,7 +37,7 @@ open class BinarySearchTree<K: Comparable<K>>() {
 
     private fun remove(tree: BinarySearchTree<K>?, key: K): BinarySearchTree<K>? {
         when {
-            tree == null -> return tree
+            tree == null -> return null
             greatThan(tree.key, key) -> tree.left = remove(tree.left, key)
             greatThan(key, tree.key) -> tree.right = remove(tree.right, key)
             tree.left != null && tree.right != null -> {
@@ -64,6 +46,7 @@ open class BinarySearchTree<K: Comparable<K>>() {
                 tree.value = tmpMinimum.value
                 tree.right = remove(tree.right, tmpMinimum.key!!)
             }
+
             tree.left != null -> return tree.left
             tree.right != null -> return tree.right
             else -> return null
@@ -71,7 +54,7 @@ open class BinarySearchTree<K: Comparable<K>>() {
         return tree
     }
 
-    open fun remove(key: K) {
+    fun remove(key: K) {
         when {
             greatThan(this.key, key) -> this.left = remove(this.left, key)
             lessThan(this.key, key) -> this.right = remove(this.right, key)
@@ -83,6 +66,7 @@ open class BinarySearchTree<K: Comparable<K>>() {
                         this.value = tmpMinimum.value
                         this.right = remove(this.right, this.key!!)
                     }
+
                     this.left != null -> this.copyFields(this.left!!)
                     this.right != null -> this.copyFields(this.right!!)
                     else -> {
@@ -92,11 +76,5 @@ open class BinarySearchTree<K: Comparable<K>>() {
                 }
             }
         }
-    }
-
-    private fun showOrderKeys() {
-        left?.showOrderKeys()
-        this.key?. let {print("$it ") }
-        right?.showOrderKeys()
     }
 }
