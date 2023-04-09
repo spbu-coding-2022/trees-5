@@ -1,6 +1,6 @@
 package etrees
 
-interface balancer {
+interface Balancer {
     fun balance()
     fun rightRotate()
     fun leftRotate()
