@@ -5,12 +5,84 @@ import kotlin.math.max
 class AvlTree<K : Comparable<K>> : AbstractBST<K, AvlTree<K>>(), Balancer {
     private var height: Int = 1
 
-    fun insert(key: Int, value: Any?) {
-        TODO()
+    fun insert(key: K, value: Any? = null) {
+        val currentKey = this.key
+        when {
+            currentKey == null || currentKey == key -> {
+                this.key = key
+                this.value = value
+            }
+
+            currentKey < key -> {
+                this.right = this.right ?: AvlTree()
+                this.right?.insert(key, value)
+            }
+
+            currentKey > key -> {
+                this.left = this.left ?: AvlTree()
+                this.left?.insert(key, value)
+            }
+        }
+        this.balance()
     }
 
-    fun remove(key: Int) {
-        TODO()
+    private fun copyFields(tree: AvlTree<K>) {
+        this.key = tree.key
+        this.value = tree.value
+        this.left = tree.left
+        this.right = tree.right
+    }
+
+    private fun findMinimum(currentTree: AvlTree<K>): AvlTree<K> {
+        return when {
+            currentTree.left == null || currentTree.left?.key == null -> currentTree
+            else -> findMinimum(currentTree.left!!)
+        }
+    }
+
+    private fun remove(tree: AvlTree<K>?, key: K): AvlTree<K>? {
+        when {
+            tree == null -> return null
+            greatThan(tree.key, key) -> tree.left = remove(tree.left, key)
+            greatThan(key, tree.key) -> tree.right = remove(tree.right, key)
+            tree.left != null && tree.right != null -> {
+                val tmpMinimum = findMinimum(tree.right!!)
+                tree.key = tmpMinimum.key
+                tree.value = tmpMinimum.value
+                tree.right = remove(tree.right, tmpMinimum.key!!)
+            }
+
+            tree.left != null -> return tree.left
+            tree.right != null -> return tree.right
+            else -> return null
+        }
+        tree.balance()
+        return tree
+    }
+
+    fun remove(key: K) {
+        when {
+            greatThan(this.key, key) -> this.left = remove(this.left, key)
+            lessThan(this.key, key) -> this.right = remove(this.right, key)
+            else -> {
+                when {
+                    this.left != null && this.right != null -> {
+                        val tmpMinimum = findMinimum(this.right!!)
+                        this.key = tmpMinimum.key
+                        this.value = tmpMinimum.value
+                        this.right = remove(this.right, this.key!!)
+                    }
+
+                    this.left != null -> this.copyFields(this.left!!)
+                    this.right != null -> this.copyFields(this.right!!)
+                    else -> {
+                        this.key = null
+                        this.value = null
+                    }
+                }
+            }
+        }
+        this.balance()
     }
 
     private fun updateHeight() {
@@ -77,4 +149,9 @@ class AvlTree<K : Comparable<K>> : AbstractBST<K, AvlTree<K>>(), Balancer {
         this.updateHeight()
         this.left?.updateHeight()
     }
+
+    fun showRootValue() {
+        println(this.value)
+    }
+
 }
