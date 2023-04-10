@@ -1,7 +1,7 @@
 package etrees
 
 open class BinarySearchTree<K : Comparable<K>> : AbstractBST<K, BinarySearchTree<K>>() {
-    fun insert(key: K, value: Any?) {
+    fun insert(key: K, value: Any? = null) {
         val currentKey = this.key
         when {
             currentKey == null || currentKey == key -> {

@@ -19,7 +19,7 @@ abstract class AbstractBST<K : Comparable<K>, Subtree : AbstractBST<K, Subtree>>
         }
     }
 
-    private fun showOrderKeys() {
+    fun showOrderKeys() {
         left?.showOrderKeys()
         this.key?.let { print("$it ") }
         right?.showOrderKeys()
