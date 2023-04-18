@@ -1,6 +1,8 @@
-package etrees
+package trees.bstree
 
-open class BinarySearchTree<K : Comparable<K>> : AbstractBST<K, BinarySearchTree<K>>() {
+import trees.AbstractBST
+
+class BinarySearchTree<K : Comparable<K>> : AbstractBST<K, BinarySearchTree<K>>() {
     fun insert(key: K, value: Any? = null) {
         val currentKey = this.key
         when {
@@ -26,13 +28,6 @@ open class BinarySearchTree<K : Comparable<K>> : AbstractBST<K, BinarySearchTree
             currentTree.left == null || currentTree.left?.key == null -> currentTree
             else -> findMinimum(currentTree.left!!)
         }
-    }
-
-    private fun copyFields(tree: BinarySearchTree<K>) {
-        this.key = tree.key
-        this.value = tree.value
-        this.left = tree.left
-        this.right = tree.right
     }
 
     private fun remove(tree: BinarySearchTree<K>?, key: K): BinarySearchTree<K>? {

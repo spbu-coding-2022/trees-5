@@ -31,14 +31,21 @@ dependencies {
     // Use the Kotlin test library.
     testImplementation("org.jetbrains.kotlin:kotlin-test")
 
-    // Use the Kotlin JUnit integration.
-//    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
-    testImplementation(kotlin("test"))
+    //database sqlite and ORM JB exposed
+    implementation("org.jetbrains.exposed:exposed-core:0.38.1")
+    implementation("org.jetbrains.exposed:exposed-jdbc:0.38.1")
+    implementation("org.jetbrains.exposed:exposed-dao:0.38.1")
+    implementation("org.xerial:sqlite-jdbc:3.34.0")
+    implementation("org.slf4j:slf4j-nop:1.7.25")
+    //test
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.1")
+
 }
 
 application {
     // Define the main class for the application.
-    mainClass.set("etrees.AppKt")
+    mainClass.set("MainKt")
 }
 
 tasks.test {

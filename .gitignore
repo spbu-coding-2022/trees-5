@@ -16,6 +16,7 @@
 *.gz
 *.iso
 *.jar
+!gradle/wrapper/gradle-wrapper.jar
 *.rar
 *.tar
 *.zip
@@ -63,3 +64,6 @@ atlassian-ide-plugin.xml
 
 # NetBeans specific files/directories
 .nbattrs
+
+#Main.kt
+Main.kt

@@ -1,24 +1,14 @@
-package etrees
+package trees.rbtree
 
-class RedBlackTree<K : Comparable<K>> : AbstractBST<K, RedBlackTree<K>>(), Balancer {
+import trees.AbstractBST
+
+class RedBlackTree<K : Comparable<K>> : AbstractBST<K, RedBlackTree<K>>() {
     enum class Color {
         RED, BLACK
     }
 
     private var parent: RedBlackTree<K>? = null
     var color: Color = Color.BLACK
-
-    override fun balance() {
-        TODO("Not yet implemented")
-    }
-
-    override fun rightRotate() {
-        TODO("Not yet implemented")
-    }
-
-    override fun leftRotate() {
-        TODO("Not yet implemented")
-    }
 
     private fun grandparent(): RedBlackTree<K>? {
         TODO()
