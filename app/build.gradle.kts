@@ -30,6 +30,8 @@ dependencies {
 
     // Use the Kotlin test library.
     testImplementation("org.jetbrains.kotlin:kotlin-test")
+    // database neo4j
+    implementation("org.neo4j.driver", "neo4j-java-driver", "5.7.0")
 
     //database sqlite and ORM JB exposed
     implementation("org.jetbrains.exposed:exposed-core:0.38.1")
