@@ -8,10 +8,10 @@ class RedBlackTree<K : Comparable<K>> : AbstractBST<K, RedBlackTree<K>>() {
         RED, BLACK
     }
 
-    private var parent: RedBlackTree<K>? = null
-    var color: Color = Color.RED
+    internal var parent: RedBlackTree<K>? = null
+    var color: Color = Color.BLACK
 
-    private fun get_root() : RedBlackTree<K> {
+    internal fun get_root() : RedBlackTree<K> {
         var n = this
         var parent = n.parent
         while (parent != null) {
@@ -72,7 +72,7 @@ class RedBlackTree<K : Comparable<K>> : AbstractBST<K, RedBlackTree<K>>() {
             gp.left
     }
 
-    fun insert(key: K, value: Any?) {
+    fun insert(key: K, value: Any? = null) {
         val root = get_root()
         var n = RedBlackTree<K>()
         n.key = key
@@ -169,7 +169,7 @@ class RedBlackTree<K : Comparable<K>> : AbstractBST<K, RedBlackTree<K>>() {
         val root = get_root()
         var node: RedBlackTree<K>? = root
         while (node?.key != key) {
-            val k = node?.key ?: throw IllegalStateException("Key must be non-nullable")
+            val k = node?.key ?: return
             node = if (k < key)
                 node.right
             else
