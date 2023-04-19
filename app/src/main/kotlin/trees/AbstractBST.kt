@@ -26,6 +26,16 @@ abstract class AbstractBST<K : Comparable<K>, Subtree : AbstractBST<K, Subtree>>
         this.right = tree.right
     }
 
+    fun contains(key: K): Boolean {
+        val currentKey = this.key
+        return when {
+            currentKey == null -> false
+            currentKey > key -> left?.contains(key) ?: false
+            currentKey < key -> right?.contains(key) ?: false
+            else -> true
+        }
+    }
+
     fun showOrderKeys() {
         left?.showOrderKeys()
         this.key?.let { print("$it ") }
