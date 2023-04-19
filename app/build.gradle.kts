@@ -39,6 +39,10 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:0.38.1")
     implementation("org.xerial:sqlite-jdbc:3.34.0")
     implementation("org.slf4j:slf4j-nop:1.7.25")
+
+    //database jackson
+    implementation ("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.8")
+
     //test
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.1")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.1")
