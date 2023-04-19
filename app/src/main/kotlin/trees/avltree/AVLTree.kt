@@ -84,7 +84,7 @@ class AVLTree<K : Comparable<K>> : AbstractBST<K, AVLTree<K>>() {
         this.height = 1 + max(this.left?.height ?: 0, this.right?.height ?: 0)
     }
 
-    private fun getBalanceValue(tree: AVLTree<K>?): Int {
+    internal fun getBalanceValue(tree: AVLTree<K>?): Int {
         if (tree == null) return 0
         return (tree.left?.height ?: 0) - (tree.right?.height ?: 0)
     }
