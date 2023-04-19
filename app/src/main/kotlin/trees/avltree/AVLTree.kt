@@ -31,7 +31,7 @@ class AVLTree<K : Comparable<K>> : AbstractBST<K, AVLTree<K>>() {
     private fun findMinimum(currentTree: AVLTree<K>): AVLTree<K> {
         return when {
             currentTree.left == null || currentTree.left?.key == null -> currentTree
-            else -> findMinimum(currentTree.left!!)
+            else -> findMinimum(currentTree.left ?: throw Exception("left subtree can not be null"))
         }
     }
 
@@ -41,10 +41,10 @@ class AVLTree<K : Comparable<K>> : AbstractBST<K, AVLTree<K>>() {
             greatThan(tree.key, key) -> tree.left = remove(tree.left, key)
             greatThan(key, tree.key) -> tree.right = remove(tree.right, key)
             tree.left != null && tree.right != null -> {
-                val tmpMinimum = findMinimum(tree.right!!)
+                val tmpMinimum = findMinimum(tree.right ?: throw Exception("right subtree can not be null"))
                 tree.key = tmpMinimum.key
                 tree.value = tmpMinimum.value
-                tree.right = remove(tree.right, tmpMinimum.key!!)
+                tree.right = remove(tree.right, tmpMinimum.key ?: throw Exception("this key can not be null"))
             }
 
             tree.left != null -> return tree.left
@@ -62,14 +62,14 @@ class AVLTree<K : Comparable<K>> : AbstractBST<K, AVLTree<K>>() {
             else -> {
                 when {
                     this.left != null && this.right != null -> {
-                        val tmpMinimum = findMinimum(this.right!!)
+                        val tmpMinimum = findMinimum(this.right?: throw Exception("right subtree can not be null"))
                         this.key = tmpMinimum.key
                         this.value = tmpMinimum.value
-                        this.right = remove(this.right, this.key!!)
+                        this.right = remove(this.right, this.key ?: throw Exception("this key can not be null"))
                     }
 
-                    this.left != null -> this.copyFields(this.left!!)
-                    this.right != null -> this.copyFields(this.right!!)
+                    this.left != null -> this.copyFields(this.left ?: throw Exception("left subtree can not be null"))
+                    this.right != null -> this.copyFields(this.right ?: throw Exception("right subtree can not be null"))
                     else -> {
                         this.key = null
                         this.value = null

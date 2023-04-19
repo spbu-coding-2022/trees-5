@@ -61,10 +61,7 @@ class RedBlackTree<K : Comparable<K>> : AbstractBST<K, RedBlackTree<K>>() {
 
     private fun grandparent() : RedBlackTree<K>? {
         val currentParent = this.parent
-        if (currentParent != null)
-            return currentParent.parent
-        else
-            return null
+        return currentParent?.parent
     }
 
     private fun uncle() : RedBlackTree<K>? {
@@ -91,10 +88,11 @@ class RedBlackTree<K : Comparable<K>> : AbstractBST<K, RedBlackTree<K>>() {
             var q : RedBlackTree<K>? = null
             while (p != null) {
                 q = p
-                if (p.key!! < key)
-                    p = p.right
+                val pKey = p.key ?: throw IllegalStateException("Key must be non-nullable")
+                p = if (pKey < key)
+                    p.right
                 else
-                    p = p.left
+                    p.left
             }
             n.parent = q
             val qKey = q?.key ?: throw IllegalStateException("Key must be non-nullable")
@@ -172,10 +170,10 @@ class RedBlackTree<K : Comparable<K>> : AbstractBST<K, RedBlackTree<K>>() {
         var node: RedBlackTree<K>? = root
         while (node?.key != key) {
             val k = node?.key ?: throw IllegalStateException("Key must be non-nullable")
-            if (k < key)
-                node = node.right
+            node = if (k < key)
+                node.right
             else
-                node = node.left
+                node.left
         }
         var nodeToRemove = node
         var colorNodeToRemove = nodeToRemove.color
