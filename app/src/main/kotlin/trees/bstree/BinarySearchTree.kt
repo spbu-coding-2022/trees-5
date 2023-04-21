@@ -2,8 +2,8 @@ package trees.bstree
 
 import trees.AbstractBST
 
-class BinarySearchTree<K : Comparable<K>> : AbstractBST<K, BinarySearchTree<K>>() {
-    fun insert(key: K, value: Any? = null) {
+class BinarySearchTree<K : Comparable<K>, V> : AbstractBST<K, V, BinarySearchTree<K, V>>() {
+    fun insert(key: K, value: V? = null) {
         val currentKey = this.key
         when {
             currentKey == null || currentKey == key -> {
@@ -23,14 +23,14 @@ class BinarySearchTree<K : Comparable<K>> : AbstractBST<K, BinarySearchTree<K>>(
         }
     }
 
-    private fun findMinimum(currentTree: BinarySearchTree<K>): BinarySearchTree<K> {
+    private fun findMinimum(currentTree: BinarySearchTree<K, V>): BinarySearchTree<K, V> {
         return when {
             currentTree.left == null || currentTree.left?.key == null -> currentTree
             else -> findMinimum(currentTree.left ?: throw Exception("left subtree can not be null"))
         }
     }
 
-    private fun remove(tree: BinarySearchTree<K>?, key: K): BinarySearchTree<K>? {
+    private fun remove(tree: BinarySearchTree<K, V>?, key: K): BinarySearchTree<K, V>? {
         when {
             tree == null -> return null
             greatThan(tree.key, key) -> tree.left = remove(tree.left, key)

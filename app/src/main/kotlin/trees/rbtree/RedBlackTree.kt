@@ -3,15 +3,15 @@ package trees.rbtree
 import trees.AbstractBST
 import java.lang.IllegalStateException
 
-class RedBlackTree<K : Comparable<K>> : AbstractBST<K, RedBlackTree<K>>() {
+class RedBlackTree<K : Comparable<K>, V> : AbstractBST<K, V, RedBlackTree<K, V>>() {
     enum class Color {
         RED, BLACK
     }
 
-    internal var parent: RedBlackTree<K>? = null
+    internal var parent: RedBlackTree<K, V>? = null
     var color: Color = Color.BLACK
 
-    internal fun get_root() : RedBlackTree<K> {
+    internal fun get_root() : RedBlackTree<K, V> {
         var n = this
         var parent = n.parent
         while (parent != null) {
@@ -59,12 +59,12 @@ class RedBlackTree<K : Comparable<K>> : AbstractBST<K, RedBlackTree<K>>() {
         this.parent = pivot
     }
 
-    private fun grandparent() : RedBlackTree<K>? {
+    private fun grandparent() : RedBlackTree<K, V>? {
         val currentParent = this.parent
         return currentParent?.parent
     }
 
-    private fun uncle() : RedBlackTree<K>? {
+    private fun uncle() : RedBlackTree<K, V>? {
         val gp = this.grandparent() ?: return null
         return if (this.parent == gp.left)
             gp.right
@@ -72,9 +72,9 @@ class RedBlackTree<K : Comparable<K>> : AbstractBST<K, RedBlackTree<K>>() {
             gp.left
     }
 
-    fun insert(key: K, value: Any? = null) {
+    fun insert(key: K, value: V? = null) {
         val root = get_root()
-        var n = RedBlackTree<K>()
+        var n = RedBlackTree<K, V>()
         n.key = key
         n.value = value
         val rootkey = root.key
@@ -84,8 +84,8 @@ class RedBlackTree<K : Comparable<K>> : AbstractBST<K, RedBlackTree<K>>() {
             root.color = Color.BLACK
         } else {
             n.color = Color.RED
-            var p : RedBlackTree<K>? = root
-            var q : RedBlackTree<K>? = null
+            var p : RedBlackTree<K, V>? = root
+            var q : RedBlackTree<K, V>? = null
             while (p != null) {
                 q = p
                 val pKey = p.key ?: throw IllegalStateException("Key must be non-nullable")
@@ -145,7 +145,7 @@ class RedBlackTree<K : Comparable<K>> : AbstractBST<K, RedBlackTree<K>>() {
         get_root().color = Color.BLACK
     }
 
-    private fun transplant(Node: RedBlackTree<K>?, newNode: RedBlackTree<K>?) {
+    private fun transplant(Node: RedBlackTree<K, V>?, newNode: RedBlackTree<K, V>?) {
         val parent = Node?.parent
 
         if (Node == parent?.left)
@@ -155,7 +155,7 @@ class RedBlackTree<K : Comparable<K>> : AbstractBST<K, RedBlackTree<K>>() {
         newNode?.parent = parent
     }
 
-    private fun treeMinimum() : RedBlackTree<K> {
+    private fun treeMinimum() : RedBlackTree<K, V> {
         var x = this
         var left = x.left
         while (left != null) {
@@ -167,7 +167,7 @@ class RedBlackTree<K : Comparable<K>> : AbstractBST<K, RedBlackTree<K>>() {
 
     fun remove(key: K) {
         val root = get_root()
-        var node: RedBlackTree<K>? = root
+        var node: RedBlackTree<K, V>? = root
         while (node?.key != key) {
             val k = node?.key ?: return
             node = if (k < key)
@@ -178,7 +178,7 @@ class RedBlackTree<K : Comparable<K>> : AbstractBST<K, RedBlackTree<K>>() {
         var nodeToRemove = node
         var colorNodeToRemove = nodeToRemove.color
         val nodeRight = node.right
-        var currentNode: RedBlackTree<K>?
+        var currentNode: RedBlackTree<K, V>?
         if (node.left == null) {
             currentNode = node.right
             transplant(node, node.right)

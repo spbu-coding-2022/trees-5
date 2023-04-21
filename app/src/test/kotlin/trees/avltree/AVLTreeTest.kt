@@ -7,11 +7,11 @@ import org.junit.jupiter.api.Test
 
 class AvlTreeTest {
 
-    private fun <K : Comparable<K>> correctBuildAVLTree(tree: AVLTree<K>): Boolean {
+    private fun <K : Comparable<K>, V> correctBuildAVLTree(tree: AVLTree<K, V>): Boolean {
         if (tree.key == null) return true
-        val stack = mutableListOf<AVLTree<K>>()
-        var currentTree: AVLTree<K>? = tree
-        var prevTree: AVLTree<K>? = null
+        val stack = mutableListOf<AVLTree<K, V>>()
+        var currentTree: AVLTree<K, V>? = tree
+        var prevTree: AVLTree<K, V>? = null
         while (currentTree != null || stack.isNotEmpty()) {
             while (currentTree != null) {
                 stack.add(currentTree)
@@ -32,7 +32,7 @@ class AvlTreeTest {
 
     @Test
     fun `overwriting the key value`() {
-        val tree = AVLTree<Int>()
+        val tree = AVLTree<Int, String>()
         tree.insert(50)
         tree.insert(100)
         tree.insert(5)
@@ -44,7 +44,7 @@ class AvlTreeTest {
 
     @Test
     fun `inserting huge number of type string keys`() {
-        val tree = AVLTree<String>()
+        val tree = AVLTree<String, String>()
         val charset = "ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz0123456789"
         for (i in 1..1000) {
             val key = (1..100) .map { charset.random() } .joinToString("")
@@ -56,7 +56,7 @@ class AvlTreeTest {
 
     @Test
     fun `checking correct calculate height`() {
-        val AvlTree = AVLTree<Int>()
+        val AvlTree = AVLTree<Int, Int>()
         AvlTree.insert(10)
         AvlTree.insert(20)
         AvlTree.insert(30)
@@ -71,7 +71,7 @@ class AvlTreeTest {
 
     @Test
     fun `checking correct getBalance`() {
-        val AVLTree = AVLTree<Int>()
+        val AVLTree = AVLTree<Int, Int>()
         AVLTree.insert(10)
         AVLTree.insert(5)
         AVLTree.insert(15)
@@ -87,7 +87,7 @@ class AvlTreeTest {
 
     @Test
     fun `adding a 10_000 number of sorted keys`() {
-        val AVLTree = AVLTree<Int>()
+        val AVLTree = AVLTree<Int, Int>()
         for (i in 1..10_000) {
             AVLTree.insert(i, i)
             assertTrue(correctBuildAVLTree(AVLTree))
@@ -96,7 +96,7 @@ class AvlTreeTest {
 
     @Test
     fun `right rotate testing`() {
-        val AVLTree = AVLTree<Int>()
+        val AVLTree = AVLTree<Int, Int>()
         /*
             constructed tree before right rotate:
                   10
@@ -134,7 +134,7 @@ class AvlTreeTest {
 
     @Test
     fun `left rotate testing`() {
-        val AVLTree = AVLTree<Int>()
+        val AVLTree = AVLTree<Int, Int>()
         /*
             constructed tree before left rotate:
                   10
@@ -173,7 +173,7 @@ class AvlTreeTest {
 
     @Test
     fun `big right rotate testing`() {
-        val AVLTree = AVLTree<Int>()
+        val AVLTree = AVLTree<Int, Int>()
         AVLTree.insert(10)
         AVLTree.insert(15)
         AVLTree.insert(7)
@@ -213,7 +213,7 @@ class AvlTreeTest {
 
     @Test
     fun `big left rotate testing`() {
-        val AVLTree = AVLTree<Int>()
+        val AVLTree = AVLTree<Int, Int>()
         AVLTree.insert(10)
         AVLTree.insert(8)
         AVLTree.insert(20)
@@ -256,12 +256,12 @@ class AvlTreeTest {
 
     @Test
     fun `getting the value of the key`() {
-        val avl = AVLTree<Int>()
+        val avl = AVLTree<Int, Int>()
         avl.key = 4
         avl.value = 1
 
-        val right = AVLTree<Int>()
-        val left = AVLTree<Int>()
+        val right = AVLTree<Int, Int>()
+        val left = AVLTree<Int, Int>()
 
         avl.left = left
         avl.right = right
@@ -281,7 +281,7 @@ class AvlTreeTest {
     @Test
     fun `inserting a new key`() {
 
-        val avl = AVLTree<Int>()
+        val avl = AVLTree<Int, Int>()
 
         for (i in 1..9)
             avl.insert(i, 10 - i)
@@ -297,7 +297,7 @@ class AvlTreeTest {
     @Test
     fun `removing a key`() {
 
-        val avl = AVLTree<Int>()
+        val avl = AVLTree<Int, Int>()
 
         avl.insert(5)
         avl.insert(3, 2)
@@ -330,7 +330,7 @@ class AvlTreeTest {
 
     @Test
     fun `balance testing`() {
-        val avl1 = AVLTree<Int>()
+        val avl1 = AVLTree<Int, Int>()
         avl1.insert(5)
         avl1.insert(3)
         avl1.insert(7)
@@ -342,7 +342,7 @@ class AvlTreeTest {
         assertTrue(avl1.getBalanceValue(avl1) <= 1)
 
 
-        val avl2 = AVLTree<Int>()
+        val avl2 = AVLTree<Int, Int>()
 
         avl2.insert(4)
         avl2.insert(3)
