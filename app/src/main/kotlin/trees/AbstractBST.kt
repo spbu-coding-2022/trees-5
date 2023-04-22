@@ -1,15 +1,15 @@
 package trees
 
-abstract class AbstractBST<K : Comparable<K>, Subtree : AbstractBST<K, Subtree>> {
+abstract class AbstractBST<K : Comparable<K>, V, Subtree : AbstractBST<K, V, Subtree>> {
     internal var key: K? = null
-    internal var value: Any? = null
+    internal var value: V? = null
     internal var right: Subtree? = null
     internal var left: Subtree? = null
 
     protected fun greatThan(x: K?, y: K?): Boolean = !(x == null || y == null || y >= x)
     protected fun lessThan(x: K?, y: K?): Boolean = !(x == null || y == null || y <= x)
 
-    fun findByKey(key: K): Any? {
+    fun findByKey(key: K): V? {
         val currentKey = this.key
         return when {
             currentKey == null -> null
@@ -34,11 +34,5 @@ abstract class AbstractBST<K : Comparable<K>, Subtree : AbstractBST<K, Subtree>>
             currentKey < key -> right?.contains(key) ?: false
             else -> true
         }
-    }
-
-    fun showOrderKeys() {
-        left?.showOrderKeys()
-        this.key?.let { print("$it ") }
-        right?.showOrderKeys()
     }
 }

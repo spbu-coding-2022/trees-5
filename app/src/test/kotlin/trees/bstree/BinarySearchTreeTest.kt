@@ -6,11 +6,11 @@ import java.util.Random
 
 class BinarySearchTreeTest {
 
-    private fun <K: Comparable<K>> correctBuildBSTree(tree: BinarySearchTree<K>): Boolean {
+    private fun <K: Comparable<K>, V> correctBuildBSTree(tree: BinarySearchTree<K, V>): Boolean {
         if (tree.key == null) return true
-        val stack = mutableListOf<BinarySearchTree<K>>()
-        var currentTree: BinarySearchTree<K>? = tree
-        var prevTree: BinarySearchTree<K>? = null
+        val stack = mutableListOf<BinarySearchTree<K, V>>()
+        var currentTree: BinarySearchTree<K, V>? = tree
+        var prevTree: BinarySearchTree<K, V>? = null
         while (currentTree != null || stack.isNotEmpty()) {
             while (currentTree != null) {
                 stack.add(currentTree)
@@ -30,7 +30,7 @@ class BinarySearchTreeTest {
 
     @Test
     fun `overwriting the key value`() {
-        val tree = BinarySearchTree<Int>()
+        val tree = BinarySearchTree<Int, String>()
         tree.insert(50)
         tree.insert(100)
         tree.insert(5)
@@ -42,14 +42,14 @@ class BinarySearchTreeTest {
 
     @Test
     fun `find by non-existent key and return null`() {
-        val tree = BinarySearchTree<Int>()
+        val tree = BinarySearchTree<Int, Int>()
         assertNull(tree.findByKey(100))
     }
 
 
     @Test
     fun `removing non-existent key`() {
-        val tree = BinarySearchTree<Int>()
+        val tree = BinarySearchTree<Int, Int>()
         tree.insert(10, 10)
         tree.insert(5, 5)
         tree.insert(12, 12)
@@ -62,7 +62,7 @@ class BinarySearchTreeTest {
 
     @Test
     fun `inserting huge number of type string keys`() {
-        val tree = BinarySearchTree<String>()
+        val tree = BinarySearchTree<String, String>()
         val charset = "ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz0123456789"
         for (i in 1..1000) {
             val key = (1..100) .map { charset.random() } .joinToString("")
@@ -76,7 +76,7 @@ class BinarySearchTreeTest {
 
     @Test
     fun `inserting huge number of type int keys`() {
-        val tree = BinarySearchTree<Int>()
+        val tree = BinarySearchTree<Int, Int>()
         val randomizer = Random(42)
         for (i in 1..1000) {
             val key = randomizer.nextInt()
@@ -88,12 +88,12 @@ class BinarySearchTreeTest {
 
     @Test
     fun `getting the value of the key`() {
-        val bst = BinarySearchTree<Int>()
+        val bst = BinarySearchTree<Int, Int>()
         bst.key = 4
         bst.value = 1
 
-        val right = BinarySearchTree<Int>()
-        val left = BinarySearchTree<Int>()
+        val right = BinarySearchTree<Int, Int>()
+        val left = BinarySearchTree<Int, Int>()
 
         bst.left = left
         bst.right = right
@@ -113,7 +113,7 @@ class BinarySearchTreeTest {
     @Test
     fun `inserting a new key`() {
 
-        val bst1 = BinarySearchTree<Int>()
+        val bst1 = BinarySearchTree<Int, Int>()
 
         for (i in 1..9)
             bst1.insert(i, 10 - i)
@@ -128,7 +128,7 @@ class BinarySearchTreeTest {
     @Test
     fun `removing a key`() {
 
-        val bst = BinarySearchTree<Int>()
+        val bst = BinarySearchTree<Int, Int>()
 
         for (i in 1..9)
             bst.insert(i, 10 - i)

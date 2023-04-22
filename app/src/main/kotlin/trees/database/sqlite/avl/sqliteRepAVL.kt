@@ -31,8 +31,8 @@ class sqliteRepAVL(private val db: Database) {
         true
     }
 
-    fun get(treeName: String): AVLTree<Int> {
-        val treeNew = AVLTree<Int>()
+    fun get(treeName: String): AVLTree<Int, String> {
+        val treeNew = AVLTree<Int, String>()
         val root = transaction(db) { DBTree.find(TreesTable.name eq treeName).firstOrNull()?.root } ?: return AVLTree()
         treeNew.key = root.key.toInt()
         treeNew.value = root.value
@@ -44,7 +44,7 @@ class sqliteRepAVL(private val db: Database) {
         return treeNew
     }
 
-    fun set(treeName: String, currentTree: AVLTree<Int>): Unit = transaction(db) {
+    fun set(treeName: String, currentTree: AVLTree<Int, String>): Unit = transaction(db) {
         remove(treeName)
 
         val dbTree = DBTree.new {
@@ -62,7 +62,7 @@ class sqliteRepAVL(private val db: Database) {
 
     }
 
-    private fun AVLTree<Int>.toDBNode(dbTree: DBTree): DBNode =
+    private fun AVLTree<Int, String>.toDBNode(dbTree: DBTree): DBNode =
         DBNode.new {
             key = this@toDBNode.key.toString()
             value = this@toDBNode.value.toString()
@@ -72,8 +72,8 @@ class sqliteRepAVL(private val db: Database) {
             tree = dbTree
         }
 
-    private fun DBNode.convert(): AVLTree<Int> {
-        val newTree = AVLTree<Int>()
+    private fun DBNode.convert(): AVLTree<Int, String> {
+        val newTree = AVLTree<Int, String>()
         newTree.key = key.toInt()
         newTree.value = value
         newTree.height = height.toInt()
