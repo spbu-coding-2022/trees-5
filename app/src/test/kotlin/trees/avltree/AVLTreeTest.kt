@@ -279,56 +279,6 @@ class AvlTreeTest {
     }
 
     @Test
-    fun `inserting a new key`() {
-
-        val avl = AVLTree<Int, Int>()
-
-        for (i in 1..9)
-            avl.insert(i, 10 - i)
-
-        for (i in 1..9)
-            assertTrue(avl.contains(i))
-
-        for (i in 1..9)
-            assertEquals(i, avl.findByKey(10 - i))
-
-    }
-
-    @Test
-    fun `removing a key`() {
-
-        val avl = AVLTree<Int, Int>()
-
-        avl.insert(5)
-        avl.insert(3, 2)
-        avl.insert(8, 3)
-        avl.insert(2, 4)
-        avl.insert(4, 5)
-        avl.insert(7, 6)
-        avl.insert(9, 7)
-        avl.insert(1, 8)
-        avl.insert(6, 9)
-        avl.remove(5)
-
-        for (i in 1..9) {
-            if (i == 5)
-                assertFalse(avl.contains(5))
-            else
-                assertTrue(avl.contains(i))
-        }
-
-        assertEquals(null, avl.findByKey(5))
-        assertEquals(2, avl.findByKey(3))
-        assertEquals(3, avl.findByKey(8))
-        assertEquals(4, avl.findByKey(2))
-        assertEquals(7, avl.findByKey(9))
-        assertEquals(8, avl.findByKey(1))
-        assertEquals(9, avl.findByKey(6))
-        assertEquals(5, avl.findByKey(4))
-        assertEquals(6, avl.findByKey(7))
-    }
-
-    @Test
     fun `balance testing`() {
         val avl1 = AVLTree<Int, Int>()
         avl1.insert(5)

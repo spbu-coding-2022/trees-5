@@ -1,6 +1,7 @@
 package trees.rbtree
 
 import trees.AbstractBST
+import trees.findMinimumTree
 import java.lang.IllegalStateException
 
 class RedBlackTree<K : Comparable<K>, V> : AbstractBST<K, V, RedBlackTree<K, V>>() {
@@ -8,7 +9,6 @@ class RedBlackTree<K : Comparable<K>, V> : AbstractBST<K, V, RedBlackTree<K, V>>
         RED, BLACK
     }
 
-    internal var parent: RedBlackTree<K, V>? = null
     var color: Color = Color.BLACK
 
     internal fun get_root() : RedBlackTree<K, V> {
@@ -72,7 +72,7 @@ class RedBlackTree<K : Comparable<K>, V> : AbstractBST<K, V, RedBlackTree<K, V>>
             gp.left
     }
 
-    fun insert(key: K, value: V? = null) {
+    override fun insert(key: K, value: V?) {
         val root = get_root()
         var n = RedBlackTree<K, V>()
         n.key = key
@@ -155,17 +155,9 @@ class RedBlackTree<K : Comparable<K>, V> : AbstractBST<K, V, RedBlackTree<K, V>>
         newNode?.parent = parent
     }
 
-    private fun treeMinimum() : RedBlackTree<K, V> {
-        var x = this
-        var left = x.left
-        while (left != null) {
-            x = left
-            left = x.left
-        }
-        return x
-    }
 
-    fun remove(key: K) {
+
+    override fun remove(key: K) {
         val root = get_root()
         var node: RedBlackTree<K, V>? = root
         while (node?.key != key) {
@@ -186,7 +178,7 @@ class RedBlackTree<K : Comparable<K>, V> : AbstractBST<K, V, RedBlackTree<K, V>>
             currentNode = node.left
             transplant(node, node.left)
         } else {
-            nodeToRemove = nodeRight.treeMinimum()
+            nodeToRemove = findMinimumTree(nodeRight)
             colorNodeToRemove = nodeToRemove.color
             currentNode = nodeToRemove.right
             if (nodeToRemove.parent == node)

@@ -2,145 +2,167 @@ package trees.bstree
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.*
-import java.util.Random
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
+import trees.correctReferencesParents
+import trees.treeKeysCorrectOrder
+import java.util.stream.Stream
+import kotlin.random.Random
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class BinarySearchTreeTest {
 
-    private fun <K: Comparable<K>, V> correctBuildBSTree(tree: BinarySearchTree<K, V>): Boolean {
-        if (tree.key == null) return true
-        val stack = mutableListOf<BinarySearchTree<K, V>>()
-        var currentTree: BinarySearchTree<K, V>? = tree
-        var prevTree: BinarySearchTree<K, V>? = null
-        while (currentTree != null || stack.isNotEmpty()) {
-            while (currentTree != null) {
-                stack.add(currentTree)
-                currentTree = currentTree.left
-            }
+    private val randomizer = Random(42)
+    private val keys = Array(1000) { randomizer.nextInt() }.distinct()
+    private val values = Array(1000) { randomizer.nextInt() }.distinct()
+    private lateinit var tree: BinarySearchTree<Int, Int>
 
-            currentTree = stack.removeLast()
-            if (prevTree != null && (currentTree.key == null || prevTree.key == null || currentTree.key!! <= prevTree.key!!)) {
-                return false
-            }
-            prevTree = currentTree
-
-            currentTree = currentTree.right
-        }
-        return true
+    @BeforeEach
+    fun recreateTree() {
+        tree = BinarySearchTree()
     }
+
+    private fun getData() = Stream.of(
+        Pair(10, 68),
+        Pair(10, 89),
+        Pair(100, 211),
+        Pair(100, 42),
+        Pair(10000, 13),
+        Pair(10000, 1337)
+    )
+
+    @ParameterizedTest
+    @MethodSource("getData")
+    fun `insert, remove and find values`(currentData: Pair<Int, Int>) {
+        val arraySize = currentData.first
+        val seed = currentData.second
+
+        val currentRandomizer = Random(seed)
+        val keys = List(arraySize) { currentRandomizer.nextInt() }
+        val values = List(arraySize) { currentRandomizer.nextInt() }
+        val map = mutableMapOf<Int, Int>()
+        for (i in 0 until arraySize) {
+            map[keys[i]] = values[i]
+        }
+
+
+        for (key in map.keys) {
+            tree.insert(key)
+            assertTrue(treeKeysCorrectOrder(tree))
+            assertTrue(correctReferencesParents(tree))
+        }
+        for (key in map.keys.shuffled()) {
+            tree.remove(key)
+            assertTrue(treeKeysCorrectOrder(tree))
+            assertTrue(correctReferencesParents(tree))
+            assertNull(tree.findByKey(key))
+        }
+
+    }
+
 
     @Test
     fun `overwriting the key value`() {
-        val tree = BinarySearchTree<Int, String>()
-        tree.insert(50)
-        tree.insert(100)
-        tree.insert(5)
-        tree.insert(10, "Good")
-        assertEquals(tree.findByKey(10), "Good")
-        tree.insert(10, "Super Good")
-        assertEquals(tree.findByKey(10), "Super Good")
+        tree.insert(10, 10)
+        assertEquals(tree.value, 10)
+        tree.insert(10, 20)
+        assertEquals(tree.value, 20)
     }
+
+    @Test
+    fun `insert root`() {
+        tree.insert(10, 10)
+        assertEquals(tree.key, 10)
+        assertEquals(tree.value, 10)
+    }
+
 
     @Test
     fun `find by non-existent key and return null`() {
-        val tree = BinarySearchTree<Int, Int>()
+        tree.insert(10)
+        assertNull(tree.findByKey(5))
         assertNull(tree.findByKey(100))
     }
 
+    @Test
+    fun `find the desired value by key in the tree`() {
+        for (i in 0 until 1000)
+            tree.insert(keys[i], values[i])
+        for (i in 0 until 1000)
+            assertEquals(tree.findByKey(keys[i]), values[i])
+    }
 
     @Test
-    fun `removing non-existent key`() {
-        val tree = BinarySearchTree<Int, Int>()
-        tree.insert(10, 10)
-        tree.insert(5, 5)
-        tree.insert(12, 12)
+    fun `removing a non-existent key`() {
+        val keys = listOf(10, 20, 30)
+        keys.forEach { tree.insert(it, it) }
+        tree.remove(2)
+        tree.remove(40)
+        tree.remove(25)
+        keys.forEach { assertEquals(tree.findByKey(it), it) }
+    }
+
+    @Test
+    fun `removing the root with the right subtree only`() {
+        val keys = listOf(10, 20, 30)
+        keys.forEach { tree.insert(it) }
+        tree.remove(10)
+        assertEquals(tree.key, 20)
+        assertEquals(tree.right?.key, 30)
+    }
+
+    @Test
+    fun `removing the root with the left subtree only`() {
+        val keys = listOf(30, 20, 10)
+        keys.forEach { tree.insert(it) }
+        tree.remove(30)
+        assertEquals(tree.key, 20)
+        assertEquals(tree.left?.key, 10)
+    }
+
+    @Test
+    fun `removing a root with left and right subtrees`() {
+        val keys = listOf(10, 20, 5, 1)
+        keys.forEach { tree.insert(it) }
+        tree.remove(10)
+        assertEquals(tree.key, 20)
+        assertNull(tree.right)
+        assertEquals(tree.left?.key, 5)
+        assertEquals(tree.left?.left?.key, 1)
+    }
+
+    @Test
+    fun `removing a tree with the left subtree only`() {
+        val keys = listOf(10, 20, 15, 14)
+        keys.forEach { tree.insert(it) }
         tree.remove(20)
-        tree.remove(4)
-        assertTrue(tree.contains(10))
-        assertTrue(tree.contains(12))
-        assertTrue(tree.contains(5))
+        assertEquals(tree.key, 10)
+        assertNull(tree.left)
+        assertEquals(tree.right?.key, 15)
+        assertEquals(tree.right?.left?.key, 14)
     }
 
     @Test
-    fun `inserting huge number of type string keys`() {
-        val tree = BinarySearchTree<String, String>()
-        val charset = "ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz0123456789"
-        for (i in 1..1000) {
-            val key = (1..100) .map { charset.random() } .joinToString("")
-            val value = (1..100) .map { charset.random() } .joinToString("")
-            tree.insert(key, value)
-            assertTrue(correctBuildBSTree(tree))
-        }
-
-
+    fun `removing a tree with the right subtree only`() {
+        val keys = listOf(20, 15, 17, 16, 18)
+        keys.forEach { tree.insert(it) }
+        tree.remove(15)
+        assertEquals(tree.key, 20)
+        assertNull(tree.right)
+        assertEquals(tree.left?.key, 17)
+        assertEquals(tree.left?.left?.key, 16)
+        assertEquals(tree.left?.right?.key, 18)
     }
 
     @Test
-    fun `inserting huge number of type int keys`() {
-        val tree = BinarySearchTree<Int, Int>()
-        val randomizer = Random(42)
-        for (i in 1..1000) {
-            val key = randomizer.nextInt()
-            val value = randomizer.nextInt()
-            tree.insert(key, value)
-            assertTrue(correctBuildBSTree(tree))
-        }
-    }
-
-    @Test
-    fun `getting the value of the key`() {
-        val bst = BinarySearchTree<Int, Int>()
-        bst.key = 4
-        bst.value = 1
-
-        val right = BinarySearchTree<Int, Int>()
-        val left = BinarySearchTree<Int, Int>()
-
-        bst.left = left
-        bst.right = right
-
-        right.key = 5
-        right.value = 3
-        left.key = 3
-        left.value = 2
-
-        assertEquals(1, bst.findByKey(4))
-        assertEquals(2, bst.findByKey(3))
-        assertEquals(3, bst.findByKey(5))
-        assertEquals(null, bst.findByKey(1))
-
-    }
-
-    @Test
-    fun `inserting a new key`() {
-
-        val bst1 = BinarySearchTree<Int, Int>()
-
-        for (i in 1..9)
-            bst1.insert(i, 10 - i)
-
-        for (i in 1..9)
-            assertTrue(bst1.contains(i))
-
-        for (i in 1..9)
-            assertEquals(i, bst1.findByKey(10 - i))
-    }
-
-    @Test
-    fun `removing a key`() {
-
-        val bst = BinarySearchTree<Int, Int>()
-
-        for (i in 1..9)
-            bst.insert(i, 10 - i)
-
-        bst.remove(5)
-
-        assertEquals(null, bst.findByKey(5))
-        for (i in 1..9)
-            if (i == 5)
-                assertFalse(bst.contains(5))
-            else
-                assertTrue(bst.contains(i))
-
+    fun `removing a tree with left and right subtrees`() {
+        val keys = listOf(10, 20, 15, 30, 25, 50)
+        keys.forEach { tree.insert(it) }
+        tree.remove(20)
+        assertEquals(tree.key, 10)
+        assertEquals(tree.right?.key, 25)
+        assertEquals(tree.right?.left?.key, 15)
+        assertEquals(tree.right?.right?.key, 30)
+        assertEquals(tree.right?.right?.right?.key, 50)
     }
 }

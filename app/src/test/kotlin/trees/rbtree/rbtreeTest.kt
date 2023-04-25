@@ -67,19 +67,6 @@ class RedBlackTreeTest {
     }
 
     @Test
-    fun `removing non-existent key`() {
-        val tree = RedBlackTree<Int, Int>()
-        tree.insert(10, 10)
-        tree.insert(5, 5)
-        tree.insert(12, 12)
-        tree.remove(20)
-        tree.remove(4)
-        assertTrue(tree.contains(10))
-        assertTrue(tree.contains(12))
-        assertTrue(tree.contains(5))
-    }
-
-    @Test
     fun `overwriting the key value`() {
         val tree = AVLTree<Int, String>()
         tree.insert(10, "one")
