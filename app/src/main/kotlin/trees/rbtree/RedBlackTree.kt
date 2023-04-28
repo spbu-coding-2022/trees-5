@@ -249,4 +249,8 @@ class RedBlackTree<K : Comparable<K>, V> : AbstractBST<K, V, RedBlackTree<K, V>>
         }
         currentNode?.color = Color.BLACK
     }
+
+    override fun createNewTree(key: K, value: V?): RedBlackTree<K, V> {
+        TODO("Not yet implemented")
+    }
 }

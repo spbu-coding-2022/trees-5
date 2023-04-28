@@ -1,140 +1,136 @@
 package trees.avltree
 
 import trees.AbstractBST
-import trees.findMinimumTree
 import kotlin.math.max
 
 class AVLTree<K : Comparable<K>, V> : AbstractBST<K, V, AVLTree<K, V>>() {
     internal var height: Int = 1
 
     override fun insert(key: K, value: V?) {
-        val currentKey = this.key
-        when {
-            currentKey == null || currentKey == key -> {
-                this.key = key
-                this.value = value
-            }
-
-            currentKey < key -> {
-                this.right = this.right ?: AVLTree()
-                this.right?.insert(key, value)
-            }
-
-            currentKey > key -> {
-                this.left = this.left ?: AVLTree()
-                this.left?.insert(key, value)
-            }
+        var currentTree = insertTree(key, value)
+        while (currentTree != null) {
+            balance(currentTree)
+            currentTree = currentTree.parent
         }
-        this.balance()
-    }
-
-    private fun remove(tree: AVLTree<K, V>?, key: K): AVLTree<K, V>? {
-        when {
-            tree == null -> return null
-            greatThan(tree.key, key) -> tree.left = remove(tree.left, key)
-            greatThan(key, tree.key) -> tree.right = remove(tree.right, key)
-            tree.left != null && tree.right != null -> {
-                val tmpMinimum = findMinimumTree(tree.right ?: throw Exception("right subtree can not be null"))
-                tree.key = tmpMinimum.key
-                tree.value = tmpMinimum.value
-                tree.right = remove(tree.right, tmpMinimum.key ?: throw Exception("this key can not be null"))
-            }
-
-            tree.left != null -> return tree.left
-            tree.right != null -> return tree.right
-            else -> return null
-        }
-        tree.balance()
-        return tree
     }
 
     override fun remove(key: K) {
-        when {
-            greatThan(this.key, key) -> this.left = remove(this.left, key)
-            lessThan(this.key, key) -> this.right = remove(this.right, key)
-            else -> {
-                when {
-                    this.left != null && this.right != null -> {
-                        val tmpMinimum = findMinimumTree(this.right?: throw Exception("right subtree can not be null"))
-                        this.key = tmpMinimum.key
-                        this.value = tmpMinimum.value
-                        this.right = remove(this.right, this.key ?: throw Exception("this key can not be null"))
-                    }
+        val necessarySubtree = searchTree(key) ?: return
+        val deletedSubtree = removeSubtree(necessarySubtree)
 
-                    this.left != null -> this.copyFields(this.left ?: throw Exception("left subtree can not be null"))
-                    this.right != null -> this.copyFields(this.right ?: throw Exception("right subtree can not be null"))
-                    else -> {
-                        this.key = null
-                        this.value = null
-                    }
-                }
-            }
+        var currentTree = deletedSubtree.parent
+        while (currentTree != null) {
+            balance(currentTree)
+            currentTree = currentTree.parent
         }
-        this.balance()
     }
 
-    private fun updateHeight() {
-        this.height = 1 + max(this.left?.height ?: 0, this.right?.height ?: 0)
+    private fun updateHeight(givenTree: AVLTree<K, V>) {
+        givenTree.height = 1 + max(givenTree.left?.height ?: 0, givenTree.right?.height ?: 0)
     }
 
-    internal fun getBalanceValue(tree: AVLTree<K, V>?): Int {
+    private fun getBalanceValue(tree: AVLTree<K, V>?): Int {
         if (tree == null) return 0
         return (tree.left?.height ?: 0) - (tree.right?.height ?: 0)
     }
 
-    private fun balance() {
-        this.updateHeight()
-        val valueBalanceThisTree = getBalanceValue(this)
-        val valueBalanceRightSubtree = getBalanceValue(this.right)
-        val valueBalanceLeftSubtree = getBalanceValue(this.left)
+    private fun balance(givenTree: AVLTree<K, V>) {
+        updateHeight(givenTree)
+        val valueBalanceThisTree = getBalanceValue(givenTree)
+        val valueBalanceRightSubtree = getBalanceValue(givenTree.right)
+        val valueBalanceLeftSubtree = getBalanceValue(givenTree.left)
 
-        if (valueBalanceThisTree > 1 && valueBalanceLeftSubtree >= 0) this.rightRotate()
-        if (valueBalanceThisTree > 1 && valueBalanceLeftSubtree < 0) this.bigRightRotate()
-        if (valueBalanceThisTree < -1 && valueBalanceRightSubtree <= 0) this.leftRotate()
-        if (valueBalanceThisTree < -1 && valueBalanceRightSubtree > 0) this.bigLeftRotate()
+        if (valueBalanceThisTree > 1 && valueBalanceLeftSubtree >= 0) rightRotate(givenTree)
+        if (valueBalanceThisTree > 1 && valueBalanceLeftSubtree < 0) bigRightRotate(givenTree)
+        if (valueBalanceThisTree < -1 && valueBalanceRightSubtree <= 0) leftRotate(givenTree)
+        if (valueBalanceThisTree < -1 && valueBalanceRightSubtree > 0) bigLeftRotate(givenTree)
     }
 
-    private fun bigRightRotate() {
-        this.left?.leftRotate()
-        this.rightRotate()
+    private fun bigRightRotate(givenTree: AVLTree<K, V>) {
+        leftRotate(givenTree.left ?: throw IllegalStateException("The tree must have a left subtree in this rotate"))
+        rightRotate(givenTree)
     }
 
-    private fun bigLeftRotate() {
-        this.right?.rightRotate()
-        this.leftRotate()
+    private fun bigLeftRotate(givenTree: AVLTree<K, V>) {
+        rightRotate(givenTree.right ?: throw IllegalStateException("The tree must have a right subtree in this rotate"))
+        leftRotate(givenTree)
     }
 
-    private fun rightRotate() {
-        val bTree = this.left
-        val correctRight = AVLTree<K, V>()
-        val correctLeft = bTree?.left
-        correctRight.key = this.key
-        correctRight.value = this.value
-        correctRight.right = this.right
-        correctRight.left = bTree?.right
-        this.value = bTree?.value
-        this.key = bTree?.key
-        this.right = correctRight
-        this.left = correctLeft
+    private fun rightRotate(givenTree: AVLTree<K, V>) {
+        val leftSubtree = givenTree.left ?: throw IllegalStateException("The tree must have a left subtree in this rotate")
+        if (givenTree.parent == null) {
+            val thisTree = AVLTree<K, V>()
+            thisTree.value = this.value
+            thisTree.key = this.key
+            thisTree.right = this.right
+            thisTree.left = leftSubtree.right
+            thisTree.right?.parent = thisTree
+            thisTree.parent = this
+            thisTree.left?.parent = thisTree
+            this.value = leftSubtree.value
+            this.key = leftSubtree.key
+            this.left = leftSubtree.left
+            this.left?.parent = this
+            this.right = thisTree
+            this.right?.let { updateHeight(it) }
+            updateHeight(this)
+            return
+        }
 
-        this.updateHeight()
-        this.right?.updateHeight()
+        leftSubtree.parent = givenTree.parent
+        if (givenTree.parent?.left == givenTree) givenTree.parent?.left = leftSubtree
+        else givenTree.parent?.right = leftSubtree
+
+        givenTree.left = leftSubtree.right
+        leftSubtree.right?.parent = givenTree
+
+        leftSubtree.right = givenTree
+        givenTree.parent = leftSubtree
+
+        updateHeight(givenTree)
+        updateHeight(leftSubtree)
     }
 
-    private fun leftRotate() {
-        val bTree = this.right
-        val correctRight = bTree?.right
-        val correctLeft = AVLTree<K, V>()
-        correctLeft.key = this.key
-        correctLeft.value = this.value
-        correctLeft.left = this.left
-        correctLeft.right = bTree?.left
-        this.value = bTree?.value
-        this.key = bTree?.key
-        this.right = correctRight
-        this.left = correctLeft
+    private fun leftRotate(givenTree: AVLTree<K, V>) {
+        val rightSubtree = givenTree.right ?: throw IllegalStateException("The tree must have a right subtree in this rotate")
+        if (givenTree.parent == null) {
+            val thisTree = AVLTree<K, V>()
+            thisTree.value = this.value
+            thisTree.key = this.key
+            thisTree.left = this.left
+            thisTree.right = rightSubtree.left
+            thisTree.parent = this
+            thisTree.left?.parent = thisTree
+            thisTree.right?.parent = thisTree
+            this.value = rightSubtree.value
+            this.key = rightSubtree.key
+            this.right = rightSubtree.right
+            this.right?.parent = this
+            this.left = thisTree
+            this.left?.let { updateHeight(it) }
+            updateHeight(this)
+            return
+        }
 
-        this.updateHeight()
-        this.left?.updateHeight()
+
+        rightSubtree.parent = givenTree.parent
+        if (givenTree.parent?.left == givenTree) givenTree.parent?.left = rightSubtree
+        else givenTree.parent?.right = rightSubtree
+
+        givenTree.right = rightSubtree.left
+        rightSubtree.left?.parent = givenTree
+
+        rightSubtree.left = givenTree
+        givenTree.parent = rightSubtree
+
+        updateHeight(givenTree)
+        updateHeight(rightSubtree)
+    }
+
+    override fun createNewTree(key: K, value: V?): AVLTree<K, V> {
+        val tmpTree = AVLTree<K, V>()
+        tmpTree.key = key
+        tmpTree.value = value
+        return tmpTree
     }
 }

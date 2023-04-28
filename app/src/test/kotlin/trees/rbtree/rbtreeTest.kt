@@ -68,11 +68,11 @@ class RedBlackTreeTest {
 
     @Test
     fun `overwriting the key value`() {
-        val tree = AVLTree<Int, String>()
-        tree.insert(10, "one")
-        assertEquals(tree.findByKey(10), "one")
-        tree.insert(10, "two")
-        assertEquals(tree.findByKey(10), "two")
+        val AVLTree = AVLTree<Int, String>()
+        AVLTree.insert(10, "one")
+        assertEquals(AVLTree.findByKey(10), "one")
+        AVLTree.insert(10, "two")
+        assertEquals(AVLTree.findByKey(10), "two")
     }
 
 }

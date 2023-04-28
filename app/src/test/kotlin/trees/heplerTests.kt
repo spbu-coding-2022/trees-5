@@ -1,7 +1,7 @@
 package trees
 
 fun <K: Comparable<K>, V, Subtree: AbstractBST<K, V, Subtree>> treeKeysCorrectOrder(tree: Subtree): Boolean {
-    val listKeys = traverseInOrder(tree)
+    val listKeys = traverseInOrderTree(tree)
     for (i in 0 until listKeys.size - 1) {
         val prevKey = listKeys[i].key ?: throw IllegalStateException("prev key can not be null")
         val currentKey = listKeys[i + 1].key ?: throw IllegalStateException("current key can not be null")
@@ -16,7 +16,7 @@ fun <K: Comparable<K>, V, Subtree: AbstractBST<K, V, Subtree>> correctReferences
     return (tree.parent == parent) && correctReferencesParents(tree.left, tree) && correctReferencesParents(tree.right, tree)
 }
 
-fun <K: Comparable<K>, V, Subtree: AbstractBST<K, V, Subtree>> traverseInOrder(tree: Subtree): List<Subtree> {
+fun <K: Comparable<K>, V, Subtree: AbstractBST<K, V, Subtree>> traverseInOrderTree(tree: Subtree): List<Subtree> {
     val treeList = mutableListOf<Subtree>()
 
     fun recursionAdding(givenTree: Subtree?) {
@@ -30,4 +30,3 @@ fun <K: Comparable<K>, V, Subtree: AbstractBST<K, V, Subtree>> traverseInOrder(t
 
     return treeList
 }
-

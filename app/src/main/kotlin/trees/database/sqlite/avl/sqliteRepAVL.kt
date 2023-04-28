@@ -32,31 +32,31 @@ class sqliteRepAVL(private val db: Database) {
     }
 
     fun get(treeName: String): AVLTree<Int, String> {
-        val treeNew = AVLTree<Int, String>()
+        val AVLTreeNew = AVLTree<Int, String>()
         val root = transaction(db) { DBTree.find(TreesTable.name eq treeName).firstOrNull()?.root } ?: return AVLTree()
-        treeNew.key = root.key.toInt()
-        treeNew.value = root.value
-        treeNew.height = root.height.toInt()
+        AVLTreeNew.key = root.key.toInt()
+        AVLTreeNew.value = root.value
+        AVLTreeNew.height = root.height.toInt()
         transaction(db) {
-            treeNew.left = root.left?.convert()
-            treeNew.right = root.right?.convert()
+            AVLTreeNew.left = root.left?.convert()
+            AVLTreeNew.right = root.right?.convert()
         }
-        return treeNew
+        return AVLTreeNew
     }
 
-    fun set(treeName: String, currentTree: AVLTree<Int, String>): Unit = transaction(db) {
+    fun set(treeName: String, currentAVLTree: AVLTree<Int, String>): Unit = transaction(db) {
         remove(treeName)
 
         val dbTree = DBTree.new {
             name = treeName
         }
         val rootNode = DBNode.new {
-            key = currentTree.key.toString()
-            value = currentTree.value.toString()
-            height = currentTree.height.toString()
+            key = currentAVLTree.key.toString()
+            value = currentAVLTree.value.toString()
+            height = currentAVLTree.height.toString()
             tree = dbTree
-            left = currentTree.left?.toDBNode(dbTree)
-            right = currentTree.right?.toDBNode(dbTree)
+            left = currentAVLTree.left?.toDBNode(dbTree)
+            right = currentAVLTree.right?.toDBNode(dbTree)
         }
         dbTree.root = rootNode
 
@@ -73,13 +73,13 @@ class sqliteRepAVL(private val db: Database) {
         }
 
     private fun DBNode.convert(): AVLTree<Int, String> {
-        val newTree = AVLTree<Int, String>()
-        newTree.key = key.toInt()
-        newTree.value = value
-        newTree.height = height.toInt()
-        newTree.left = left?.convert()
-        newTree.right = right?.convert()
+        val newAVLTree = AVLTree<Int, String>()
+        newAVLTree.key = key.toInt()
+        newAVLTree.value = value
+        newAVLTree.height = height.toInt()
+        newAVLTree.left = left?.convert()
+        newAVLTree.right = right?.convert()
 
-        return newTree
+        return newAVLTree
     }
 }
