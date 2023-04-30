@@ -40,7 +40,7 @@ dependencies {
     implementation("org.xerial:sqlite-jdbc:3.34.0")
     implementation("org.slf4j:slf4j-nop:1.7.25")
 
-    //database jackson
+    //database  json (jackson module)
     implementation ("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.8")
 
     //test
@@ -57,3 +57,5 @@ application {
 tasks.test {
     useJUnitPlatform()
 }
+
+tasks.register("prepareKotlinBuildScriptModel"){}
