@@ -1,7 +1,6 @@
 plugins {
     // Apply the org.jetbrains.kotlin.jvm Plugin to add support for Kotlin.
     id("org.jetbrains.kotlin.jvm") version "1.8.20"
-
     application
 }
 
@@ -10,6 +9,7 @@ repositories {
 }
 
 dependencies {
+
     // Neo4j
     implementation("org.neo4j.driver", "neo4j-java-driver", "5.7.0")
 
@@ -18,11 +18,15 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-jdbc:0.38.1")
     implementation("org.jetbrains.exposed:exposed-dao:0.38.1")
     implementation("org.xerial:sqlite-jdbc:3.30.1")
-
+    
+    // Json Jackson
+    implementation ("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.8")
+    
     // Logging
     implementation("org.slf4j:slf4j-nop:1.7.25")
 
     // Test
+
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.1")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.1")
 
@@ -35,3 +39,5 @@ application {
 tasks.test {
     useJUnitPlatform()
 }
+
+tasks.register("prepareKotlinBuildScriptModel"){}
