@@ -52,12 +52,12 @@ class BinarySearchTreeTest {
         for (key in map.keys) {
             tree.insert(key)
         }
-        checkBSTInvariant(tree)
+        assertTrue(checkBSTInvariant(tree))
         for (key in map.keys.shuffled()) {
             tree.remove(key)
             assertNull(tree.findByKey(key))
         }
-        checkBSTInvariant(tree)
+        assertTrue(checkBSTInvariant(tree))
     }
 
 
@@ -69,7 +69,7 @@ class BinarySearchTreeTest {
         for (i in leftRange until rightRange) {
             assertEquals(tree.findByKey(keys[i]), values[i])
             tree.remove(keys[i])
-            checkBSTInvariant(tree)
+            assertTrue(checkBSTInvariant(tree))
             assertNull(tree.findByKey(keys[i]))
         }
     }
@@ -78,7 +78,7 @@ class BinarySearchTreeTest {
     fun `invariant and find after insertion`() {
         for (i in keys.indices) {
             tree.insert(keys[i], values[i])
-            checkBSTInvariant(tree)
+            assertTrue(checkBSTInvariant(tree))
             assertEquals(tree.findByKey(keys[i]), values[i])
         }
     }
@@ -87,11 +87,13 @@ class BinarySearchTreeTest {
     fun `invariant after insertion duplicates`() {
         for (i in keys.indices) {
             tree.insert(keys[i], values[i])
+            assertTrue(checkBSTInvariant(tree))
             assertEquals(tree.findByKey(keys[i]), values[i])
         }
         val values = Array(keys.size) { randomizer.nextInt() }
         for (i in keys.indices) {
             tree.insert(keys[i], values[i])
+            assertTrue(checkBSTInvariant(tree))
             assertEquals(tree.findByKey(keys[i]), values[i])
         }
     }

@@ -31,7 +31,7 @@ class AvlTreeTest {
 
     private val randomizer = Random(87)
     private val keys = Array(1000) { randomizer.nextInt() }.distinct()
-    private val values = Array(1000) { randomizer.nextInt() }.distinct()
+    private val values = Array(keys.size) { randomizer.nextInt() }.distinct()
     private lateinit var tree: AVLTree<Int, Int>
 
     @BeforeEach
@@ -44,7 +44,7 @@ class AvlTreeTest {
         Pair(10, 89),
         Pair(1000, 211),
         Pair(1000, 42),
-        Pair(100000, 13),
+        Pair(100000, 20),
         Pair(100000, 1337)
     )
 
@@ -55,10 +55,10 @@ class AvlTreeTest {
         val seed = currentData.second
 
         val currentRandomizer = Random(seed)
-        val keys = List(arraySize) { currentRandomizer.nextInt() }
-        val values = List(arraySize) { currentRandomizer.nextInt() }
+        val keys = List(arraySize) { currentRandomizer.nextInt() }.distinct()
+        val values = List(keys.size) { currentRandomizer.nextInt() }
         val map = mutableMapOf<Int, Int>()
-        for (i in 0 until arraySize) {
+        for (i in keys.indices) {
             map[keys[i]] = values[i]
         }
 
@@ -99,11 +99,13 @@ class AvlTreeTest {
     fun `invariant after insertion duplicates`() {
         for (i in keys.indices) {
             tree.insert(keys[i], values[i])
+            assertTrue(checkAVLInvariant(tree))
             assertEquals(tree.findByKey(keys[i]), values[i])
         }
         val values = Array(keys.size) { randomizer.nextInt() }
         for (i in keys.indices) {
             tree.insert(keys[i], values[i])
+            assertTrue(checkAVLInvariant(tree))
             assertEquals(tree.findByKey(keys[i]), values[i])
         }
     }

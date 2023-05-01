@@ -2,255 +2,250 @@ package trees.rbtree
 
 import trees.AbstractBST
 import trees.findMinimumTree
-import java.lang.IllegalStateException
 
 class RedBlackTree<K : Comparable<K>, V> : AbstractBST<K, V, RedBlackTree<K, V>>() {
     enum class Color {
         RED, BLACK
     }
 
+    internal var root = this
     var color: Color = Color.BLACK
+        internal set
 
-    internal fun get_root() : RedBlackTree<K, V> {
-        var n = this
-        var parent = n.parent
-        while (parent != null) {
-            n = parent
-            parent = n.parent
+    override fun findByKey(key: K): V? {
+        return findByKey(root, key)
+    }
+
+    override fun createNewTree(key: K?, value: V?): RedBlackTree<K, V> {
+        val tmp = RedBlackTree<K, V>()
+        tmp.value = value
+        tmp.key = key
+        return tmp
+    }
+
+    override fun replaceSubtree(wasTree: RedBlackTree<K, V>, newTree: RedBlackTree<K, V>?) {
+        val parent = wasTree.parent
+        if (parent == null) {
+            if (newTree == null) {
+                root.key = null
+                root.value = null
+                root.left = null
+                root.right = null
+            }
+            else {
+                root = newTree
+            }
+        } else if (parent.left == wasTree) {
+            parent.left = newTree
+        } else {
+            parent.right = newTree
         }
-        return n
+        newTree?.parent = wasTree.parent
     }
 
-    private fun leftRotate() {
-        val pivot = this.right ?: throw IllegalArgumentException("Node to rotate must have a right child")
-        val pivotLeft = pivot.left
-        val currentParent = this.parent
-        this.right = pivotLeft
-
-        if (pivotLeft != null)
-            pivot.left?.parent = this
-        pivot.parent = currentParent
-
-        if (this == currentParent?.left)
-            this.parent?.left = pivot
-        else
-            this.parent?.right = pivot
-
-        pivot.left = this
-        this.parent = pivot
+    private fun reverseColor() {
+        this.color = if (this.color == Color.BLACK) Color.RED else Color.BLACK
     }
 
-    private fun rightRotate() {
-        val pivot = this.left ?: throw IllegalArgumentException("Node to rotate must have a left child")
-        val pivotRight = pivot.right
-        val currentParent = this.parent
-        this.left = pivotRight
-
-        if (pivotRight != null)
-            pivot.right?.parent = this
-        pivot.parent = currentParent
-
-        if (this == currentParent?.right)
-            this.parent?.right = pivot
-        else
-            this.parent?.left = pivot
-
-        pivot.right = this
-        this.parent = pivot
+    private fun getSibling(givenTree: RedBlackTree<K, V>): RedBlackTree<K, V>? {
+        val currentParent = givenTree.parent ?: return null
+        if (currentParent.left == givenTree) return currentParent.right
+        return currentParent.left
     }
 
-    private fun grandparent() : RedBlackTree<K, V>? {
-        val currentParent = this.parent
-        return currentParent?.parent
+    private fun getUncle(givenTree: RedBlackTree<K, V>): RedBlackTree<K, V>? {
+        val currentParent = givenTree.parent ?: return null
+        return getSibling(currentParent)
     }
 
-    private fun uncle() : RedBlackTree<K, V>? {
-        val gp = this.grandparent() ?: return null
-        return if (this.parent == gp.left)
-            gp.right
-        else
-            gp.left
+    private fun balanceAfterInsert(givenTree: RedBlackTree<K, V>): RedBlackTree<K, V> {
+        var currentTree = givenTree
+
+        while (currentTree.parent != null && currentTree.parent?.color == Color.RED) {
+            val currentParent = currentTree.parent ?: throw IllegalStateException("the parent must not be null")
+            val currentGrandParent = currentParent.parent ?: throw IllegalStateException("grand parent must not be null")
+            val currentUncle = getUncle(currentTree)
+            if (currentUncle?.color == Color.RED) {
+                currentParent.reverseColor()
+                currentGrandParent.reverseColor()
+                currentUncle.reverseColor()
+                currentTree = currentGrandParent
+            } else {
+                if (currentGrandParent.left == currentParent) {
+                    if (currentTree == currentParent.right)
+                        leftRotate(currentParent)
+                    currentTree = rightRotate(currentGrandParent)
+                    currentTree.right?.reverseColor()
+                } else {
+                    if (currentTree == currentParent.left)
+                        rightRotate(currentParent)
+                    currentTree = leftRotate(currentGrandParent)
+                    currentTree.left?.reverseColor()
+                }
+                currentTree.reverseColor()
+                break
+            }
+        }
+
+        if (currentTree.parent == null && currentTree.color == Color.RED) {
+            currentTree.reverseColor()
+            return currentTree
+        }
+
+        while (currentTree.parent != null) {
+            currentTree = currentTree.parent ?: throw IllegalStateException("current tree must have parent")
+        }
+       return currentTree
+    }
+
+    private fun balanceAfterRemove(givenTree: RedBlackTree<K, V>): RedBlackTree<K, V> {
+        var currentTree = givenTree
+        while (currentTree.parent != null && currentTree.color == Color.BLACK) {
+            val currentParent = currentTree.parent ?: throw IllegalStateException("parent can not be null")
+            if (currentParent.left == currentTree) {
+                val rightSibling = currentParent.right ?: throw IllegalStateException("parent must have right child")
+                if (currentParent.color == Color.RED) {
+                    if (rightSibling.left?.color == Color.RED || rightSibling.right?.color == Color.RED) {
+                        currentParent.reverseColor()
+                        if (rightSibling.left?.color == Color.RED) {
+                            rightRotate(rightSibling)
+                        } else {
+                            rightSibling.reverseColor()
+                            rightSibling.right?.reverseColor()
+                        }
+                        currentTree = leftRotate(currentParent)
+                    } else {
+                        currentParent.reverseColor()
+                        rightSibling.reverseColor()
+                    }
+                    break
+                } else {
+                    if (rightSibling.color == Color.RED) {
+                        var leftChildOfRightSibling = rightSibling.left ?: throw IllegalStateException("left child of right sibling can not be null")
+                        if (leftChildOfRightSibling.left?.color == Color.RED || leftChildOfRightSibling.right?.color == Color.RED) {
+                            if (leftChildOfRightSibling.right?.color == Color.BLACK) {
+                                leftChildOfRightSibling.reverseColor()
+                                leftChildOfRightSibling.left?.reverseColor()
+                                leftChildOfRightSibling = rightRotate(leftChildOfRightSibling)
+                            }
+                            leftChildOfRightSibling.right?.reverseColor()
+                            rightRotate(rightSibling)
+                        } else {
+                            rightSibling.reverseColor()
+                            leftChildOfRightSibling.reverseColor()
+                        }
+                        currentTree = leftRotate(currentParent)
+                        break
+                    } else {
+                        if (rightSibling.left?.color == Color.RED || rightSibling.right?.color == Color.RED) {
+                            if (rightSibling.left?.color == Color.RED) {
+                                rightSibling.left?.reverseColor()
+                                rightRotate(rightSibling)
+                            } else {
+                                rightSibling.right?.reverseColor()
+                            }
+                            currentTree = leftRotate(currentParent)
+                            break
+                        } else {
+                            rightSibling.reverseColor()
+                            currentTree = currentParent
+                        }
+                    }
+                }
+            } else {
+                val leftSibling = currentParent.left ?: throw IllegalStateException("parent must have left child")
+                if (currentParent.color == Color.RED) {
+                    if (leftSibling.left?.color == Color.RED || leftSibling.right?.color == Color.RED) {
+                        currentParent.reverseColor()
+                        if (leftSibling.right?.color == Color.RED) {
+                            leftRotate(leftSibling)
+                        } else {
+                            leftSibling.reverseColor()
+                            leftSibling.left?.reverseColor()
+                        }
+                        currentTree = rightRotate(currentParent)
+                    } else {
+                        currentParent.reverseColor()
+                        leftSibling.reverseColor()
+                    }
+                    break
+                } else {
+                    if (leftSibling.color == Color.RED) {
+                        var rightChildOfLeftSibling = leftSibling.right ?: throw IllegalStateException("right child of left sibling can not be null")
+                        if (rightChildOfLeftSibling.left?.color == Color.RED || rightChildOfLeftSibling.right?.color == Color.RED) {
+                            if (rightChildOfLeftSibling.left?.color == Color.BLACK) {
+                                rightChildOfLeftSibling.reverseColor()
+                                rightChildOfLeftSibling.right?.reverseColor()
+                                rightChildOfLeftSibling = leftRotate(rightChildOfLeftSibling)
+                            }
+                            rightChildOfLeftSibling.left?.reverseColor()
+                            leftRotate(leftSibling)
+                        } else {
+                            leftSibling.reverseColor()
+                            rightChildOfLeftSibling.reverseColor()
+                        }
+                        currentTree = rightRotate(currentParent)
+                        break
+                    } else {
+                        if (leftSibling.left?.color == Color.RED || leftSibling.right?.color == Color.RED) {
+                            if (leftSibling.right?.color == Color.RED) {
+                                leftSibling.right?.reverseColor()
+                                leftRotate(leftSibling)
+                            } else {
+                                leftSibling.left?.reverseColor()
+                            }
+                            currentTree = rightRotate(currentParent)
+                            break
+                        } else {
+                            leftSibling.reverseColor()
+                            currentTree = currentParent
+                        }
+                    }
+                }
+            }
+        }
+
+        while (currentTree.parent != null) {
+            currentTree = currentTree.parent ?: throw IllegalStateException("current tree must have parent")
+        }
+
+        return currentTree
     }
 
     override fun insert(key: K, value: V?) {
-        val root = get_root()
-        var n = RedBlackTree<K, V>()
-        n.key = key
-        n.value = value
-        val rootkey = root.key
-        if (rootkey == null || rootkey == key) {
-            root.key = key
-            root.value = value
-            root.color = Color.BLACK
+        val insertedTree = insertTree(key, value, root) ?: return
+        insertedTree.color = Color.RED
+        root = balanceAfterInsert(insertedTree)
+    }
+
+    override fun deleteTreeWithNoSubtree(givenTree: RedBlackTree<K, V>): RedBlackTree<K, V> {
+        if (givenTree.color == Color.BLACK) {
+            root = balanceAfterRemove(givenTree)
+        }
+        replaceSubtree(givenTree, null)
+        return givenTree
+    }
+
+    override fun deleteTreeWithOneSubtree(givenTree: RedBlackTree<K, V>): RedBlackTree<K, V> {
+        if (givenTree.left != null) {
+            givenTree.left?.reverseColor()
+            replaceSubtree(givenTree, givenTree.left)
         } else {
-            n.color = Color.RED
-            var p : RedBlackTree<K, V>? = root
-            var q : RedBlackTree<K, V>? = null
-            while (p != null) {
-                q = p
-                val pKey = p.key ?: throw IllegalStateException("Key must be non-nullable")
-                p = if (pKey < key)
-                    p.right
-                else
-                    p.left
-            }
-            n.parent = q
-            val qKey = q?.key ?: throw IllegalStateException("Key must be non-nullable")
-            if (qKey < key)
-                q.right = n
-            else
-                q.left = n
+            givenTree.right?.reverseColor()
+            replaceSubtree(givenTree, givenTree.right)
         }
-        val parent = n.parent
-        val gp = n.grandparent()
-        val u = n.uncle()
-
-        if (parent == null) {
-            n.color = Color.BLACK
-            return
-        }
-        while (parent.color == Color.RED) {
-            if (parent == gp?.left) {
-                if (u != null && u.color == Color.RED) {
-                    parent.color = Color.BLACK
-                    u.color = Color.BLACK
-                    gp.color = Color.RED
-                    n = gp
-                } else {
-                    if (n == parent.right) {
-                        n = parent
-                        n.leftRotate()
-                    }
-                    parent.color = Color.BLACK
-                    gp.color = Color.RED
-                    gp.rightRotate()
-                }
-            } else {
-                if (u != null && u.color == Color.RED) {
-                    parent.color = Color.BLACK
-                    u.color = Color.BLACK
-                    gp?.color = Color.RED
-                    n = gp ?: throw IllegalStateException("Grandparent can not be null, becauce uncle is not null")
-                } else {
-                    if (n == parent.left) {
-                        n = parent
-                        n.rightRotate()
-                    }
-                    parent.color = Color.BLACK
-                    gp?.color = Color.RED
-                    gp?.leftRotate()
-                }
-            }
-        }
-        get_root().color = Color.BLACK
+        return givenTree
     }
 
-    private fun transplant(Node: RedBlackTree<K, V>?, newNode: RedBlackTree<K, V>?) {
-        val parent = Node?.parent
-
-        if (Node == parent?.left)
-            parent?.left = newNode
-        else
-            parent?.right = newNode
-        newNode?.parent = parent
+    override fun deleteTreeWithTwoSubtrees(givenTree: RedBlackTree<K, V>): RedBlackTree<K, V> {
+        val tmpMinimumTree = findMinimumTree(givenTree.right ?: throw Exception("right subtree can not be null"))
+        givenTree.key = tmpMinimumTree.key
+        givenTree.value = tmpMinimumTree.value
+        return removeSubtree(tmpMinimumTree)
     }
-
-
 
     override fun remove(key: K) {
-        val root = get_root()
-        var node: RedBlackTree<K, V>? = root
-        while (node?.key != key) {
-            val k = node?.key ?: return
-            node = if (k < key)
-                node.right
-            else
-                node.left
-        }
-        var nodeToRemove = node
-        var colorNodeToRemove = nodeToRemove.color
-        val nodeRight = node.right
-        var currentNode: RedBlackTree<K, V>?
-        if (node.left == null) {
-            currentNode = node.right
-            transplant(node, node.right)
-        } else if (nodeRight == null) {
-            currentNode = node.left
-            transplant(node, node.left)
-        } else {
-            nodeToRemove = findMinimumTree(nodeRight)
-            colorNodeToRemove = nodeToRemove.color
-            currentNode = nodeToRemove.right
-            if (nodeToRemove.parent == node)
-                currentNode?.parent = nodeToRemove
-            else {
-                transplant(nodeToRemove, nodeToRemove.right)
-                nodeToRemove.right = node.right
-                nodeToRemove.right?.parent = nodeToRemove
-            }
-            transplant(node, nodeToRemove)
-            nodeToRemove.left = node.left
-            nodeToRemove.left?.parent = nodeToRemove
-            nodeToRemove.color = node.color
-        }
-        if (colorNodeToRemove == Color.BLACK) {
-            val currentNodeParent = currentNode?.parent
-            while (currentNodeParent != null && currentNode?.color == Color.BLACK) {
-                if (currentNode == currentNodeParent.left) {
-                    var child = currentNodeParent.right
-                    if (child?.color == Color.RED) {
-                        child.color = Color.BLACK
-                        currentNode.parent?.color = Color.RED
-                        currentNode.parent?.leftRotate()
-                        child = currentNodeParent.right
-                    }
-                    if (child?.left?.color == Color.BLACK && child.right?.color == Color.BLACK) {
-                        child.color = Color.RED
-                        currentNode = currentNode.parent
-                    } else {
-                        if (child?.right?.color == Color.BLACK) {
-                            child.left?.color = Color.BLACK
-                            child.color = Color.RED
-                            child.rightRotate()
-                            child = currentNodeParent.right
-                        }
-                        child?.color = currentNodeParent.color
-                        currentNode.parent?.color = Color.BLACK
-                        child?.right?.color = Color.BLACK
-                        currentNode.parent?.leftRotate()
-                        currentNode = root
-                    }
-                } else {
-                    var child = currentNodeParent.left
-                    if (child?.color == Color.RED) {
-                        child.color = Color.BLACK
-                        currentNode.parent?.color = Color.RED
-                        currentNode.parent?.rightRotate()
-                        child = currentNodeParent.left
-                    }
-                    if (child?.left?.color == Color.BLACK && child.right?.color == Color.BLACK) {
-                        child.color = Color.RED
-                        currentNode = currentNode.parent
-                    } else {
-                        if (child?.left?.color == Color.BLACK) {
-                            child.right?.color = Color.BLACK
-                            child.color = Color.RED
-                            child.leftRotate()
-                            child = currentNodeParent.left
-                        }
-                        child?.color = currentNodeParent.color
-                        currentNode.parent?.color = Color.BLACK
-                        child?.left?.color = Color.BLACK
-                        currentNode.parent?.rightRotate()
-                        currentNode = root
-                    }
-                }
-            }
-        }
-        currentNode?.color = Color.BLACK
-    }
-
-    override fun createNewTree(key: K, value: V?): RedBlackTree<K, V> {
-        TODO("Not yet implemented")
+        val necessaryTree = searchTree(root, key) ?: return
+        removeSubtree(necessaryTree)
     }
 }
