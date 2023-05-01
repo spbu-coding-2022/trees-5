@@ -1,4 +1,4 @@
-package trees.database.json.bst
+package trees.database.json
 
 
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -15,7 +15,7 @@ class JsonRepository(private val dirPath: String) {
         registerModule(KotlinModule())
         enable(SerializationFeature.INDENT_OUTPUT)
     }
-    fun getInt(treeName: String): BinarySearchTree<Int>? {
+    fun getInt(treeName: String): BinarySearchTree<Int, String>? {
 
         val json = try {
             File(dirPath, "${treeName}.json").readText()
@@ -25,7 +25,7 @@ class JsonRepository(private val dirPath: String) {
         return mapper.readValue(json)
     }
 
-    fun getStr(treeName: String): BinarySearchTree<String>? {
+    fun getStr(treeName: String): BinarySearchTree<String, String>? {
 
         val json = try {
             File(dirPath, "${treeName}.json").readText()
@@ -35,13 +35,13 @@ class JsonRepository(private val dirPath: String) {
         return mapper.readValue(json)
     }
 
-    fun setInt(treeName: String, bst: BinarySearchTree<Int>){
+    fun setInt(treeName: String, bst: BinarySearchTree<Int, String>){
         val serialized = mapper.writeValueAsString(bst)
         val file = File(dirPath, "${treeName}.json")
         file.writeText(serialized)
     }
 
-    fun setStr(treeName: String, bst: BinarySearchTree<String>){
+    fun setStr(treeName: String, bst: BinarySearchTree<String, String>){
         val serialized = mapper.writeValueAsString(bst)
         val file = File(dirPath, "${treeName}.json")
         file.writeText(serialized)
