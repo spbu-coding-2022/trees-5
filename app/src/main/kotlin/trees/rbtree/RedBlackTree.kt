@@ -8,7 +8,6 @@ class RedBlackTree<K : Comparable<K>, V> : AbstractBST<K, V, RedBlackTree<K, V>>
         RED, BLACK
     }
 
-    internal var parent: RedBlackTree<K, V>? = null
     var color: Color = Color.BLACK
 
     internal fun get_root() : RedBlackTree<K, V> {

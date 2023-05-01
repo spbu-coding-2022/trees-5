@@ -5,6 +5,7 @@ abstract class AbstractBST<K : Comparable<K>, V, Subtree : AbstractBST<K, V, Sub
     internal var value: V? = null
     internal var right: Subtree? = null
     internal var left: Subtree? = null
+    internal var parent: Subtree? = null
 
     protected fun greatThan(x: K?, y: K?): Boolean = !(x == null || y == null || y >= x)
     protected fun lessThan(x: K?, y: K?): Boolean = !(x == null || y == null || y <= x)
