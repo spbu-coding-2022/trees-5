@@ -17,6 +17,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-core:0.38.1")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.38.1")
     implementation("org.jetbrains.exposed:exposed-dao:0.38.1")
+    implementation("org.xerial:sqlite-jdbc:3.30.1")
 
     // Logging
     implementation("org.slf4j:slf4j-nop:1.7.25")
