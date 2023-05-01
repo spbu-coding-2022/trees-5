@@ -3,10 +3,10 @@ package trees.avltree
 import trees.AbstractBST
 import kotlin.math.max
 
-class AVLTree<K : Comparable<K>> : AbstractBST<K, AVLTree<K>>() {
+class AVLTree<K : Comparable<K>, V> : AbstractBST<K, V, AVLTree<K, V>>() {
     internal var height: Int = 1
 
-    fun insert(key: K, value: Any? = null) {
+    fun insert(key: K, value: V? = null) {
         val currentKey = this.key
         when {
             currentKey == null || currentKey == key -> {
@@ -28,14 +28,15 @@ class AVLTree<K : Comparable<K>> : AbstractBST<K, AVLTree<K>>() {
     }
 
 
-    private fun findMinimum(currentTree: AVLTree<K>): AVLTree<K> {
+
+    private fun findMinimum(currentTree: AVLTree<K, V>): AVLTree<K, V> {
         return when {
             currentTree.left == null || currentTree.left?.key == null -> currentTree
             else -> findMinimum(currentTree.left ?: throw Exception("left subtree can not be null"))
         }
     }
 
-    private fun remove(tree: AVLTree<K>?, key: K): AVLTree<K>? {
+    private fun remove(tree: AVLTree<K, V>?, key: K): AVLTree<K, V>? {
         when {
             tree == null -> return null
             greatThan(tree.key, key) -> tree.left = remove(tree.left, key)
@@ -84,7 +85,7 @@ class AVLTree<K : Comparable<K>> : AbstractBST<K, AVLTree<K>>() {
         this.height = 1 + max(this.left?.height ?: 0, this.right?.height ?: 0)
     }
 
-    internal fun getBalanceValue(tree: AVLTree<K>?): Int {
+    internal fun getBalanceValue(tree: AVLTree<K, V>?): Int {
         if (tree == null) return 0
         return (tree.left?.height ?: 0) - (tree.right?.height ?: 0)
     }
@@ -113,7 +114,7 @@ class AVLTree<K : Comparable<K>> : AbstractBST<K, AVLTree<K>>() {
 
     private fun rightRotate() {
         val bTree = this.left
-        val correctRight = AVLTree<K>()
+        val correctRight = AVLTree<K, V>()
         val correctLeft = bTree?.left
         correctRight.key = this.key
         correctRight.value = this.value
@@ -131,7 +132,7 @@ class AVLTree<K : Comparable<K>> : AbstractBST<K, AVLTree<K>>() {
     private fun leftRotate() {
         val bTree = this.right
         val correctRight = bTree?.right
-        val correctLeft = AVLTree<K>()
+        val correctLeft = AVLTree<K, V>()
         correctLeft.key = this.key
         correctLeft.value = this.value
         correctLeft.left = this.left

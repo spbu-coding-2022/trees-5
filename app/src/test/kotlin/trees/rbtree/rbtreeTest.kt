@@ -7,13 +7,13 @@ import java.util.*
 
 class RedBlackTreeTest {
 
-    private fun <K : Comparable<K>> correctBuildRBTree(tree: RedBlackTree<K>): Boolean {
+    private fun <K : Comparable<K>, V> correctBuildRBTree(tree: RedBlackTree<K, V>): Boolean {
 
-        val stack = mutableListOf<RedBlackTree<K>>()
-        var currentTree: RedBlackTree<K>? = tree.get_root()
+        val stack = mutableListOf<RedBlackTree<K, V>>()
+        var currentTree: RedBlackTree<K, V>? = tree.get_root()
         if (currentTree?.color != RedBlackTree.Color.BLACK) return false
         val rootKey =  currentTree.key ?: return true
-        var prevTree: RedBlackTree<K>? = null
+        var prevTree: RedBlackTree<K, V>? = null
         while (currentTree != null || stack.isNotEmpty()) {
             while (currentTree != null) {
                 stack.add(currentTree)
@@ -35,7 +35,7 @@ class RedBlackTreeTest {
 
     @Test
     fun `inserting huge number of type string keys`() {
-        val tree = RedBlackTree<String>()
+        val tree = RedBlackTree<String, String>()
         val charset = "ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz0123456789"
         for (i in 1..1000) {
             val key = (1..100) .map { charset.random() } .joinToString("")
@@ -47,7 +47,7 @@ class RedBlackTreeTest {
 
     @Test
     fun `inserting huge number of type int keys`() {
-        val tree = RedBlackTree<Int>()
+        val tree = RedBlackTree<Int, Int>()
         val randomizer = Random(42)
         for (i in 1..1000) {
             val key = randomizer.nextInt()
@@ -59,7 +59,7 @@ class RedBlackTreeTest {
 
     @Test
     fun `adding a 10_000 number of sorted keys`() {
-        val RBTree = RedBlackTree<Int>()
+        val RBTree = RedBlackTree<Int, Int>()
         for (i in 1..10_000) {
             RBTree.insert(i, i)
             assertTrue(correctBuildRBTree(RBTree))
@@ -68,7 +68,7 @@ class RedBlackTreeTest {
 
     @Test
     fun `removing non-existent key`() {
-        val tree = RedBlackTree<Int>()
+        val tree = RedBlackTree<Int, Int>()
         tree.insert(10, 10)
         tree.insert(5, 5)
         tree.insert(12, 12)
@@ -81,7 +81,7 @@ class RedBlackTreeTest {
 
     @Test
     fun `overwriting the key value`() {
-        val tree = AVLTree<Int>()
+        val tree = AVLTree<Int, String>()
         tree.insert(10, "one")
         assertEquals(tree.findByKey(10), "one")
         tree.insert(10, "two")
