@@ -1,11 +1,14 @@
 package trees
 
+import com.fasterxml.jackson.annotation.JsonIgnore
+
 @Suppress("UNCHECKED_CAST")
 abstract class AbstractBST<K : Comparable<K>, V, Subtree : AbstractBST<K, V, Subtree>> {
     internal var key: K? = null
     internal var value: V? = null
     internal var right: Subtree? = null
     internal var left: Subtree? = null
+    @JsonIgnore
     open var parent: Subtree? = null
 
     protected abstract fun createNewTree(key: K?, value: V?): Subtree
