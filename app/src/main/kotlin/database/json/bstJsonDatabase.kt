@@ -1,4 +1,4 @@
-package trees.database.json
+package database.json
 
 
 import com.fasterxml.jackson.databind.ObjectMapper

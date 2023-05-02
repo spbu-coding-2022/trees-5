@@ -1,4 +1,4 @@
-package trees.database.sqlite
+package database.sqlite
 
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass

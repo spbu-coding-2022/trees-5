@@ -1,4 +1,4 @@
-package trees.database.sqlite
+package database.sqlite
 
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq

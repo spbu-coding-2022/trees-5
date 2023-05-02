@@ -1,8 +1,5 @@
 package trees
 
-import trees.avltree.AVLTree
-import trees.rbtree.RedBlackTree
-
 abstract class AbstractBST<K : Comparable<K>, V, Subtree : AbstractBST<K, V, Subtree>> {
     internal var key: K? = null
     internal var value: V? = null

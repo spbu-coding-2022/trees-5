@@ -1,4 +1,4 @@
-package trees.database.neo4j
+package database.neo4j
 
 import org.neo4j.driver.*
 import org.neo4j.driver.exceptions.SessionExpiredException
