@@ -22,3 +22,16 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           arguments: build
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - if: matrix.os == 'ubuntu-latest'
+        name: Run Test Coverage
+        run: ./gradlew jacocoTestReport
+
+      - if: matrix.os == 'ubuntu-latest'
+        name: Jacoco Code Coverage Report
+        uses: cicirello/jacoco-badge-generator@v2.8.0
+        with:
+          generate-branches-badge: true
+          jacoco-csv-file: app/build/jacoco/report.csv

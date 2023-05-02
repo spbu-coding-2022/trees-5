@@ -38,14 +38,15 @@ tasks.test {
 tasks.test {
     finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
 }
-tasks.jacocoTestReport {
-    dependsOn(tasks.test) // tests are required to run before generating the report
-}
 
 tasks.jacocoTestReport {
+    dependsOn(tasks.test)
     reports {
-        xml.required.set(false)
-        csv.required.set(false)
+        xml.required.set(true)
+        xml.outputLocation.set(layout.buildDirectory.file("jacoco/report.xml"))
+        csv.required.set(true)
+        csv.outputLocation.set(layout.buildDirectory.file("jacoco/report.csv"))
+        html.required.set(true)
         html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
     }
 }
