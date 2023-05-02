@@ -15,7 +15,7 @@ class JsonRepository(private val dirPath: String) {
         registerModule(KotlinModule())
         enable(SerializationFeature.INDENT_OUTPUT)
     }
-    fun getInt(treeName: String): BinarySearchTree<Int, String>? {
+    fun getTreeWithIntKey(treeName: String): BinarySearchTree<Int, String>? {
 
         val json = try {
             File(dirPath, "${treeName}.json").readText()
@@ -25,7 +25,7 @@ class JsonRepository(private val dirPath: String) {
         return mapper.readValue(json)
     }
 
-    fun getStr(treeName: String): BinarySearchTree<String, String>? {
+    fun getTreeWithStringKey(treeName: String): BinarySearchTree<String, String>? {
 
         val json = try {
             File(dirPath, "${treeName}.json").readText()
@@ -35,19 +35,19 @@ class JsonRepository(private val dirPath: String) {
         return mapper.readValue(json)
     }
 
-    fun setInt(treeName: String, bst: BinarySearchTree<Int, String>){
+    fun setTreeWithIntKey(treeName: String, bst: BinarySearchTree<Int, String>){
         val serialized = mapper.writeValueAsString(bst)
         val file = File(dirPath, "${treeName}.json")
         file.writeText(serialized)
     }
 
-    fun setStr(treeName: String, bst: BinarySearchTree<String, String>){
+    fun setTreeWithStringKey(treeName: String, bst: BinarySearchTree<String, String>){
         val serialized = mapper.writeValueAsString(bst)
         val file = File(dirPath, "${treeName}.json")
         file.writeText(serialized)
     }
 
-    fun getNames(): Any {
+    fun getNamesTrees(): Any {
         val directory = File(dirPath)
 
         return if (directory.isDirectory) {

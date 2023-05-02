@@ -1,20 +1,60 @@
-# Trees by team 5
-The project was created to study the operation of insertion and deletion algorithms for a binary search tree, red black tree, AVL tree. The application can also help developers debug their code that uses trees or data structures based on them.
-## Summary
+# trees-5
 
-- [How to build application](#download-and-build)
-- [Trees](#trees)
-    - [Tests](#Tests)
-    - [Databases](#databases)
-- [Authors](#authors)
+---
 
-## How to build application
-To build the application run
+> `trees-5` - This is an application that allows you to visualize the work of such types of binary trees as
+> [Simple Binary Search Trees](https://en.wikipedia.org/wiki/Binary_search_tree), [AVL Trees](https://en.wikipedia.org/wiki/AVL_trees),
+> [Red-Black Trees](https://en.wikipedia.org/wiki/Red–black_tree).
+
+### The application supports saving trees to databases
+- Simple Binary Search Trees in **Json** flat file
+- AVL Trees in **SQLite** 
+- Red-Black Trees in **Neo4j**
+
+---
+
+
+## Getting started
+
+
+### Build
+
+To build and run this application locally, you'll need Git, Gradle and JDK installed on your computer. From your command
+line:
+
 ```bash
-  ./gradlew build
+# Clone this repository
+git clone https://github.com/spbu-coding-2022/trees-2.git
+
+# Go into the repository
+cd trees-2
+
+# Build
+./gradlew assemble      
+# Or use `./gradlew build` if you want to test and lint app
+
+# Run the app
+./gradlew run
 ```
-## Trees
-Implemented 3 binary search trees with different algorithms of insertion and deletion:
-- [Binary search](https://en.wikipedia.org/wiki/Binary_search_tree)
-- [Red-Black](https://en.wikipedia.org/wiki/Red%E2%80%93black_tree)
-- [AVL](https://en.wikipedia.org/wiki/AVL_tree)
+
+### Neo4j database
+>This database requires a separate connection to store in it Red-Black Trees
+
+TO-DO __A brief guide__ \
+If you got trouble during installation or for more information visit [site](https://neo4j.com/docs/operations-manual/current/installation/)
+
+---
+
+## More information about the app
+
+
+
+
+TO-DO __Write with screenshots as soon as it's ready__
+
+
+---
+
+### License
+
+Distributed under the GNU GPL v3.0 License. See [LICENSE](LICENSE) for more information.

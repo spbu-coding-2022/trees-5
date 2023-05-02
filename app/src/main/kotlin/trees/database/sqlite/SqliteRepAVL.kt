@@ -17,7 +17,7 @@ class SqliteRepAVL(private val dbName: String) {
         }
     }
 
-    fun namesTrees(): List<String> = transaction(db) {
+    fun getNamesTrees(): List<String> = transaction(db) {
         val listNames = mutableListOf<String>()
         TreeDatabase.all().forEach { listNames.add(it.name) }
         listNames
