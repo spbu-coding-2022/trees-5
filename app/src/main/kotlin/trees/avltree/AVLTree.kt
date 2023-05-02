@@ -6,6 +6,13 @@ import kotlin.math.max
 class AVLTree<K : Comparable<K>, V> : AbstractBST<K, V, AVLTree<K, V>>() {
     internal var height: Int = 1
 
+    override fun createNewTree(key: K?, value: V?): AVLTree<K, V> {
+        val tmpTree = AVLTree<K, V>()
+        tmpTree.key = key
+        tmpTree.value = value
+        return tmpTree
+    }
+
     override fun insert(key: K, value: V?) {
         var currentTree = insertTree(key, value, this)
         while (currentTree != null) {
@@ -14,12 +21,9 @@ class AVLTree<K : Comparable<K>, V> : AbstractBST<K, V, AVLTree<K, V>>() {
         }
     }
 
-    override fun replaceSubtree(wasTree: AVLTree<K, V>, newTree: AVLTree<K, V>?) {
-        if (wasTree.parent == null)
-            replaceTreeRoot(wasTree, newTree)
-        else
-            super.replaceSubtree(wasTree, newTree)
-    }
+    override fun replaceSubtree(wasTree: AVLTree<K, V>, newTree: AVLTree<K, V>?): Unit =
+        if (wasTree.parent == null) replaceTreeRoot(wasTree, newTree)
+        else super.replaceSubtree(wasTree, newTree)
 
     override fun remove(key: K) {
         val necessarySubtree = searchTree(this, key) ?: return
@@ -36,10 +40,9 @@ class AVLTree<K : Comparable<K>, V> : AbstractBST<K, V, AVLTree<K, V>>() {
         givenTree.height = 1 + max(givenTree.left?.height ?: 0, givenTree.right?.height ?: 0)
     }
 
-    private fun getBalanceValue(tree: AVLTree<K, V>?): Int {
-        if (tree == null) return 0
-        return (tree.left?.height ?: 0) - (tree.right?.height ?: 0)
-    }
+    private fun getBalanceValue(tree: AVLTree<K, V>?): Int =
+        if (tree == null) 0 else (tree.left?.height ?: 0) - (tree.right?.height ?: 0)
+
 
     private fun balance(givenTree: AVLTree<K, V>) {
         updateHeight(givenTree)
@@ -69,6 +72,9 @@ class AVLTree<K : Comparable<K>, V> : AbstractBST<K, V, AVLTree<K, V>>() {
         }
     }
 
+    /**
+     * right turn for the case when the tree is the root
+     */
     private fun rightAvlRotateRootTree() {
         val leftSubtree = this.left ?: throw IllegalStateException("The tree must have a left subtree in this rotate")
         val thisTree = AVLTree<K, V>()
@@ -88,6 +94,10 @@ class AVLTree<K : Comparable<K>, V> : AbstractBST<K, V, AVLTree<K, V>>() {
         updateHeight(this)
     }
 
+
+    /**
+     * left turn for the case when the tree is the root
+     */
     private fun leftAvlRotateRootTree() {
         val rightSubtree = this.right ?: throw IllegalStateException("The tree must have a right subtree in this rotate")
         val thisTree = AVLTree<K, V>()
@@ -119,12 +129,5 @@ class AVLTree<K : Comparable<K>, V> : AbstractBST<K, V, AVLTree<K, V>>() {
         updateHeight(givenTree)
         updateHeight(returnedLeftRotateTree)
         return returnedLeftRotateTree
-    }
-
-    override fun createNewTree(key: K?, value: V?): AVLTree<K, V> {
-        val tmpTree = AVLTree<K, V>()
-        tmpTree.key = key
-        tmpTree.value = value
-        return tmpTree
     }
 }

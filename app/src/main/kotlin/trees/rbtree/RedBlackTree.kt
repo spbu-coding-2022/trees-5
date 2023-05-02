@@ -10,15 +10,15 @@ class RedBlackTree<K : Comparable<K>, V> : AbstractBST<K, V, RedBlackTree<K, V>>
     internal var root = this
     internal var color: Color = Color.BLACK
 
-    override fun findByKey(key: K): V? {
-        return findByKey(root, key)
-    }
-
     override fun createNewTree(key: K?, value: V?): RedBlackTree<K, V> {
         val tmp = RedBlackTree<K, V>()
         tmp.value = value
         tmp.key = key
         return tmp
+    }
+
+    override fun findByKey(key: K): V? {
+        return findByKey(root, key)
     }
 
     override fun replaceSubtree(wasTree: RedBlackTree<K, V>, newTree: RedBlackTree<K, V>?) {
@@ -56,6 +56,10 @@ class RedBlackTree<K : Comparable<K>, V> : AbstractBST<K, V, RedBlackTree<K, V>>
         return getSibling(currentParent)
     }
 
+    /**
+     * you can read more about balancing after adding and after removing a subtree here
+     * https://neerc.ifmo.ru/wiki/
+     */
     private fun balanceAfterInsert(givenTree: RedBlackTree<K, V>): RedBlackTree<K, V> {
         var currentTree = givenTree
 

@@ -1,5 +1,6 @@
 package trees
 
+@Suppress("UNCHECKED_CAST")
 abstract class AbstractBST<K : Comparable<K>, V, Subtree : AbstractBST<K, V, Subtree>> {
     internal var key: K? = null
     internal var value: V? = null
@@ -17,6 +18,10 @@ abstract class AbstractBST<K : Comparable<K>, V, Subtree : AbstractBST<K, V, Sub
         removeSubtree(needSubtree)
     }
 
+
+    /**
+     * if wasTree equal root, then replaces root with newTree
+     */
     protected fun replaceTreeRoot(wasTree: Subtree, newTree: Subtree?) {
         val parent = wasTree.parent
         this.key = newTree?.key
@@ -28,6 +33,10 @@ abstract class AbstractBST<K : Comparable<K>, V, Subtree : AbstractBST<K, V, Sub
         newTree?.parent = parent
     }
 
+    /**
+     * a common case of replacing wasTree with newTree
+     * NOTE! does not work for root in AVL tree and Simple BST
+     */
     protected open fun replaceSubtree(wasTree: Subtree, newTree: Subtree?) {
         val parent = wasTree.parent
         if (parent?.left == wasTree) parent.left = newTree
@@ -46,6 +55,9 @@ abstract class AbstractBST<K : Comparable<K>, V, Subtree : AbstractBST<K, V, Sub
         }
     }
 
+    /**
+     * search for a tree in the givenTree by key
+     */
     protected fun searchTree(givenTree: Subtree, key: K): Subtree? {
         if (givenTree.key == null) return null
         var currentTree: Subtree? = givenTree
@@ -61,19 +73,28 @@ abstract class AbstractBST<K : Comparable<K>, V, Subtree : AbstractBST<K, V, Sub
         return null
     }
 
+    /**
+     * works without overridden for AVL tree and simple BST
+     */
     protected open fun deleteTreeWithOneSubtree(givenTree: Subtree): Subtree {
         val necessaryTree = if (givenTree.left == null) givenTree.right else givenTree.left
         replaceSubtree(givenTree, necessaryTree)
         return givenTree
     }
 
-    protected open fun deleteTreeWithTwoSubtrees(givenTree: Subtree): Subtree {
+    /**
+     * suitable for all three trees and not overridden
+     */
+    private fun deleteTreeWithTwoSubtrees(givenTree: Subtree): Subtree {
         val tmpMinimumTree = findMinimumTree(givenTree.right ?: throw Exception("right subtree can not be null"))
         givenTree.key = tmpMinimumTree.key
         givenTree.value = tmpMinimumTree.value
         return removeSubtree(tmpMinimumTree)
     }
 
+    /**
+     * works without overridden for AVL tree and simple BST
+     */
     protected open fun deleteTreeWithNoSubtree(givenTree: Subtree): Subtree {
         replaceSubtree(givenTree, null)
         return givenTree
@@ -89,7 +110,8 @@ abstract class AbstractBST<K : Comparable<K>, V, Subtree : AbstractBST<K, V, Sub
         }
         var currentTree = givenTree
         while (true) {
-            val resultCompare = key.compareTo(currentTree.key ?: throw IllegalStateException("this key can not be null"))
+            val resultCompare =
+                key.compareTo(currentTree.key ?: throw IllegalStateException("this key can not be null"))
             when {
                 resultCompare > 0 -> {
                     if (currentTree.right == null) {
@@ -100,6 +122,7 @@ abstract class AbstractBST<K : Comparable<K>, V, Subtree : AbstractBST<K, V, Sub
                     }
                     currentTree = currentTree.right ?: throw IllegalStateException("right subtree can not be null")
                 }
+
                 resultCompare < 0 -> {
                     if (currentTree.left == null) {
                         val insertedTree = createNewTree(key, value)
@@ -109,6 +132,7 @@ abstract class AbstractBST<K : Comparable<K>, V, Subtree : AbstractBST<K, V, Sub
                     }
                     currentTree = currentTree.left ?: throw IllegalStateException("left subtree can not be null")
                 }
+
                 else -> {
                     currentTree.key = key
                     currentTree.value = value
@@ -126,9 +150,8 @@ abstract class AbstractBST<K : Comparable<K>, V, Subtree : AbstractBST<K, V, Sub
     }
 
     /**
-     * Returns the found value by key, if there is no key, returns null
+     * Returns the found value by key in givenTree, if there is no key, returns null
      */
-
     protected fun findByKey(givenTree: Subtree, key: K): V? {
         val currentKey = givenTree.key
         if (currentKey == null || currentKey == key) {
@@ -139,7 +162,8 @@ abstract class AbstractBST<K : Comparable<K>, V, Subtree : AbstractBST<K, V, Sub
             else -> givenTree.left
         }
         while (currentTree != null) {
-            val resultCompare = key.compareTo(currentTree.key ?: throw IllegalStateException("the current key cannot be null"))
+            val resultCompare =
+                key.compareTo(currentTree.key ?: throw IllegalStateException("the current key cannot be null"))
             currentTree = when {
                 resultCompare > 0 -> currentTree.right
                 resultCompare < 0 -> currentTree.left
@@ -154,7 +178,8 @@ abstract class AbstractBST<K : Comparable<K>, V, Subtree : AbstractBST<K, V, Sub
     }
 
     protected open fun rightRotate(givenTree: Subtree): Subtree {
-        val leftSubtree = givenTree.left ?: throw IllegalStateException("The tree must have a left subtree in this rotate")
+        val leftSubtree =
+            givenTree.left ?: throw IllegalStateException("The tree must have a left subtree in this rotate")
         leftSubtree.parent = givenTree.parent
         if (givenTree.parent?.left == givenTree) givenTree.parent?.left = leftSubtree
         else givenTree.parent?.right = leftSubtree
@@ -168,7 +193,8 @@ abstract class AbstractBST<K : Comparable<K>, V, Subtree : AbstractBST<K, V, Sub
     }
 
     protected open fun leftRotate(givenTree: Subtree): Subtree {
-        val rightSubtree = givenTree.right ?: throw IllegalStateException("The tree must have a right subtree in this rotate")
+        val rightSubtree =
+            givenTree.right ?: throw IllegalStateException("The tree must have a right subtree in this rotate")
         rightSubtree.parent = givenTree.parent
         if (givenTree.parent?.left == givenTree) givenTree.parent?.left = rightSubtree
         else givenTree.parent?.right = rightSubtree
@@ -180,17 +206,17 @@ abstract class AbstractBST<K : Comparable<K>, V, Subtree : AbstractBST<K, V, Sub
         givenTree.parent = rightSubtree
         return rightSubtree
     }
-}
 
-/**
- * Searches for the minimum subtree of the argument
- */
-internal fun <K: Comparable<K>, V, Subtree: AbstractBST<K, V, Subtree>> findMinimumTree(givenTree: Subtree): Subtree {
-    var currentTree = givenTree
-    var leftSubtree = currentTree.left
-    while (leftSubtree != null) {
-        currentTree = leftSubtree
-        leftSubtree = currentTree.left
+    /**
+     * Searches for the next subtree in order
+     */
+    private fun findMinimumTree(givenTree: Subtree): Subtree {
+        var currentTree = givenTree
+        var leftSubtree = currentTree.left
+        while (leftSubtree != null) {
+            currentTree = leftSubtree
+            leftSubtree = currentTree.left
+        }
+        return currentTree
     }
-    return currentTree
 }

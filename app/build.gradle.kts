@@ -1,5 +1,4 @@
 plugins {
-    // Apply the org.jetbrains.kotlin.jvm Plugin to add support for Kotlin.
     id("org.jetbrains.kotlin.jvm") version "1.8.20"
     jacoco
     application
@@ -27,7 +26,6 @@ dependencies {
     implementation("org.slf4j:slf4j-nop:1.7.25")
 
     // Test
-
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.1")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.1")
 
@@ -42,7 +40,7 @@ tasks.test {
 }
 
 tasks.test {
-    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
+    finalizedBy(tasks.jacocoTestReport)
 }
 
 tasks.jacocoTestReport {

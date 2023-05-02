@@ -6,8 +6,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import trees.avltree.AVLTree
 import java.io.File
 
-
-class SqliteRepAVL(private val dbName: String) {
+class SqliteRepAVL(dbName: String) {
     private var db: Database = Database.connect("jdbc:sqlite:${File(dbName)}", "org.sqlite.JDBC")
 
     init {
@@ -17,12 +16,18 @@ class SqliteRepAVL(private val dbName: String) {
         }
     }
 
+    /**
+     * return a list of all available tree names in the database
+     */
     fun getNamesTrees(): List<String> = transaction(db) {
         val listNames = mutableListOf<String>()
         TreeDatabase.all().forEach { listNames.add(it.name) }
         listNames
     }
 
+    /**
+     * delete the tree and all subtrees from the database
+     */
     fun remove(treeName: String): Boolean = transaction(db) {
         val currentTree = TreeDatabase.find(TreesTable.name eq treeName).firstOrNull() ?: return@transaction false
         AvlSubtree.find(SubtreesAvlTable.tree eq currentTree.id).forEach { it.delete() }
@@ -30,9 +35,15 @@ class SqliteRepAVL(private val dbName: String) {
         true
     }
 
+    /**
+     * find out the type of tree by its name
+     */
     fun getKeyTypeOfTree(treeName: String): String? =
         transaction(db) { TreeDatabase.find(TreesTable.name eq treeName).firstOrNull()?.typeOfKey }
 
+    /**
+     * get a tree with an Int type key from the database
+     */
     fun getTreeWithIntKey(treeName: String): AVLTree<Int, String> = transaction(db) {
         val root = TreeDatabase.find(TreesTable.name eq treeName).firstOrNull()?.root ?: return@transaction AVLTree()
         val createdTree = AVLTree<Int, String>()
@@ -44,6 +55,9 @@ class SqliteRepAVL(private val dbName: String) {
         createdTree
     }
 
+    /**
+     * get a tree with a String type key from the database
+     */
     fun getTreeWithStringKey(treeName: String): AVLTree<String, String> = transaction(db){
         val root = TreeDatabase.find(TreesTable.name eq treeName).firstOrNull()?.root ?: return@transaction AVLTree()
         val createdTree = AVLTree<String, String>()
@@ -55,6 +69,10 @@ class SqliteRepAVL(private val dbName: String) {
         createdTree
     }
 
+    /**
+     * An auxiliary function that helps to recursively retrieve a tree
+     * and all its subtrees with an Int key from the database
+     */
     private fun AvlSubtree.convertTreeWithIntKey(parent: AVLTree<Int, String>? = null): AVLTree<Int, String> {
         val createdTree = AVLTree<Int, String>()
         createdTree.key = key.toInt()
@@ -66,6 +84,10 @@ class SqliteRepAVL(private val dbName: String) {
         return createdTree
     }
 
+    /**
+     * An auxiliary function that helps to recursively retrieve a tree and
+     * all its subtrees with a String key from the database
+     */
     private fun AvlSubtree.convertTreeWithStringKey(parent: AVLTree<String, String>? = null): AVLTree<String, String> {
         val createdTree = AVLTree<String, String>()
         createdTree.key = key
@@ -77,6 +99,10 @@ class SqliteRepAVL(private val dbName: String) {
         return createdTree
     }
 
+    /**
+     * writes a tree with an Int or String type key to the database
+     * in other cases returns exception
+     */
     fun setTree(treeName: String, currentTree: AVLTree<*, String>, typeKey: String): Unit = transaction(db) {
         if (typeKey != "Int" && typeKey != "String") throw IllegalStateException("Saving this type of key is not supported in the tree")
         remove(treeName)
@@ -96,6 +122,9 @@ class SqliteRepAVL(private val dbName: String) {
 
     }
 
+    /**
+     * recursively writes all subtrees to AvlSubtree table
+     */
     private fun AVLTree<*, String>.toAvlSubtree(avlTree: TreeDatabase): AvlSubtree =
         AvlSubtree.new {
             key = this@toAvlSubtree.key.toString()

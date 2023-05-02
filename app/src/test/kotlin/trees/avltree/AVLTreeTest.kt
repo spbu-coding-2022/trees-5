@@ -17,6 +17,10 @@ import kotlin.random.Random
 class AvlTreeTest {
 
     private fun checkAVLInvariant(tree: AVLTree<Int, Int>): Boolean {
+
+        /**
+         * recursively checks that the height of the right and left subtree differs by less than 1
+         */
         fun isBalanced(currentTree: AVLTree<Int, Int>?): Int? {
             if (currentTree == null) return 0
             val heightLeft = isBalanced(currentTree.left) ?: return null

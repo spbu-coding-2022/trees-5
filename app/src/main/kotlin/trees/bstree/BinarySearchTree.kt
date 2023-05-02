@@ -10,10 +10,7 @@ class BinarySearchTree<K : Comparable<K>, V> : AbstractBST<K, V, BinarySearchTre
         return tmpTree
     }
 
-    override fun replaceSubtree(wasTree: BinarySearchTree<K, V>, newTree: BinarySearchTree<K, V>?) {
-        if (wasTree.parent == null)
-            replaceTreeRoot(wasTree, newTree)
-        else
-            super.replaceSubtree(wasTree, newTree)
-    }
+    override fun replaceSubtree(wasTree: BinarySearchTree<K, V>, newTree: BinarySearchTree<K, V>?): Unit =
+        if (wasTree.parent == null) replaceTreeRoot(wasTree, newTree)
+        else super.replaceSubtree(wasTree, newTree)
 }

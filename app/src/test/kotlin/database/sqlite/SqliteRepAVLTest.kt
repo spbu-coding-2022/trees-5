@@ -136,6 +136,13 @@ class SqliteRepAVLTest {
 
     @Test
     @Order(10)
+    fun `test get type key of tree`() {
+        assertEquals(repo.getKeyTypeOfTree("Avl1"), "Int")
+        assertEquals(repo.getKeyTypeOfTree("Avl3"), "String")
+    }
+
+    @Test
+    @Order(11)
     fun `correct deletion from the database`() {
         repo.remove("Avl1")
         repo.remove("Avl3")

@@ -5,7 +5,6 @@ import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 
-
 internal object SubtreesAvlTable : IntIdTable("nodes") {
     val key = varchar("key", 255)
     val value = varchar("value", 255)
@@ -13,7 +12,6 @@ internal object SubtreesAvlTable : IntIdTable("nodes") {
     val left = reference("left_id", SubtreesAvlTable).nullable()
     val right = reference("right_id", SubtreesAvlTable).nullable()
     val tree = reference("tree_id", TreesTable)
-
 }
 
 internal class AvlSubtree(id: EntityID<Int>) : IntEntity(id) {
