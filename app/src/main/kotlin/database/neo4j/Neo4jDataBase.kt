@@ -1,4 +1,4 @@
-package trees.database.neo4j
+package database.neo4j
 
 import org.neo4j.driver.*
 import org.neo4j.driver.exceptions.SessionExpiredException
@@ -27,7 +27,7 @@ class Neo4jDataBase() : Closeable {
         tx.run("MATCH (n: node) DETACH DELETE n")
     }
 
-    private fun createNode(sb: StringBuilder, node: RedBlackTree<String>) {
+    private fun createNode(sb: StringBuilder, node: RedBlackTree<String, String>) {
         with(node) {
             sb.append(
                 "CREATE (:node {key : \"${node.key}\", " +
@@ -45,13 +45,13 @@ class Neo4jDataBase() : Closeable {
         }
     }
 
-    private fun genExportTree(root: RedBlackTree<String>): String {
+    private fun genExportTree(root: RedBlackTree<String, String>): String {
         val sb = StringBuilder()
         createNode(sb, root)
         return sb.toString()
     }
 
-    fun loadTree(root: RedBlackTree<String>) {
+    fun loadTree(root: RedBlackTree<String, String>) {
         val session = driver?.session() ?: throw IOException("Driver is not open")
         session.executeWrite { transaction ->
             cleanDataBase(transaction)
@@ -72,15 +72,15 @@ class Neo4jDataBase() : Closeable {
         session.close()
     }
 
-    private class NodeKeys(val n: RedBlackTree<String>, val lKey: String?, val rKey: String?)
+    private class NodeKeys(val n: RedBlackTree<String, String>, val lKey: String?, val rKey: String?)
 
-    private fun parse(nodesRecords: Result) : RedBlackTree<String>? {
+    private fun parse(nodesRecords: Result) : RedBlackTree<String, String>? {
         val NodeKeysMap = mutableMapOf<String, NodeKeys>()
         for (record in nodesRecords) {
             try {
                 val key = record["key"].asString()
                 val value = record["value"].asString()
-                val node = RedBlackTree<String>()
+                val node = RedBlackTree<String, String>()
                 node.key = key
                 node.value = value
 
@@ -123,7 +123,7 @@ class Neo4jDataBase() : Closeable {
         return root
     }
 
-    private fun unloadNode(transaction: TransactionContext): RedBlackTree<String>? {
+    private fun unloadNode(transaction: TransactionContext): RedBlackTree<String, String>? {
         val nodesRecords = transaction.run(
             "MATCH (p: RBNode)" +
                     "OPTIONAL MATCH (p)-[:LEFT_CHILD]->(l: node) " +
@@ -133,9 +133,9 @@ class Neo4jDataBase() : Closeable {
         )
         return parse(nodesRecords)
     }
-    fun unloadTree(): RedBlackTree<String>? {
+    fun unloadTree(): RedBlackTree<String, String>? {
         val session = driver?.session() ?: throw IOException("Driver is not open")
-        val res: RedBlackTree<String>? = session.executeRead { transaction ->
+        val res: RedBlackTree<String, String>? = session.executeRead { transaction ->
             unloadNode(transaction)
         }
         session.close()

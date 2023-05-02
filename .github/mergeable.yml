@@ -1,7 +1,6 @@
 version: 2
 mergeable:
   - when: 'pull_request.*, pull_request_review.*'
-    name: Approvals check
     filter:
       - do: payload
         pull_request:
@@ -20,6 +19,7 @@ mergeable:
             - ALanovaya
             - PavlushaSource
             - AlexShmak
+
       - do: description
         no_empty:
           enabled: true
