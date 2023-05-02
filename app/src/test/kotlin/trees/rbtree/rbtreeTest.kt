@@ -68,52 +68,52 @@ class RedBlackTreeTest {
         tree = RedBlackTree()
     }
 
-//    private fun getData() = Stream.of(
-//        Pair(10, 68),
-//        Pair(10, 89),
-//        Pair(1000, 211),
-//        Pair(1000, 42),
-//        Pair(100000, 20),
-//        Pair(100000, 1337)
-//    )
-//
-//    @ParameterizedTest
-//    @MethodSource("getData")
-//    fun `insert, remove and find values`(currentData: Pair<Int, Int>) {
-//        val arraySize = currentData.first
-//        val seed = currentData.second
-//
-//        val currentRandomizer = Random(seed)
-//        val keys = List(arraySize) { currentRandomizer.nextInt() }.distinct()
-//        val values = List(keys.size) { currentRandomizer.nextInt() }
-//        val map = mutableMapOf<Int, Int>()
-//        for (i in keys.indices) {
-//            map[keys[i]] = values[i]
-//        }
-//
-//        for (key in map.keys) {
-//            tree.insert(key)
-//        }
-//        assertTrue(checkRBTInvariant(tree))
-//        for (key in map.keys.shuffled()) {
-//            tree.remove(key)
-//            assertNull(tree.findByKey(key))
-//        }
-//        assertTrue(checkRBTInvariant(tree))
-//    }
+    private fun getData() = Stream.of(
+        Pair(10, 68),
+        Pair(10, 89),
+        Pair(1000, 211),
+        Pair(1000, 42),
+        Pair(100000, 20),
+        Pair(100000, 1337)
+    )
 
-//    @Test
-//    fun `invariant and find after deletion`() {
-//        for (i in keys.indices) tree.insert(keys[i], values[i])
-//        val leftRange = (Math.random() * keys.size).toInt()
-//        val rightRange = (Math.random() * (keys.size - leftRange + 1)).toInt() + leftRange
-//        for (i in leftRange until rightRange) {
-//            assertEquals(tree.findByKey(keys[i]), values[i])
-//            tree.remove(keys[i])
-//            assertTrue(checkRBTInvariant(tree))
-//            assertNull(tree.findByKey(keys[i]))
-//        }
-//    }
+    @ParameterizedTest
+    @MethodSource("getData")
+    fun `insert, remove and find values`(currentData: Pair<Int, Int>) {
+        val arraySize = currentData.first
+        val seed = currentData.second
+
+        val currentRandomizer = Random(seed)
+        val keys = List(arraySize) { currentRandomizer.nextInt() }.distinct()
+        val values = List(keys.size) { currentRandomizer.nextInt() }
+        val map = mutableMapOf<Int, Int>()
+        for (i in keys.indices) {
+            map[keys[i]] = values[i]
+        }
+
+        for (key in map.keys) {
+            tree.insert(key)
+        }
+        assertTrue(checkRBTInvariant(tree))
+        for (key in map.keys.shuffled()) {
+            tree.remove(key)
+            assertNull(tree.findByKey(key))
+        }
+        assertTrue(checkRBTInvariant(tree))
+    }
+
+    @Test
+    fun `invariant and find after deletion`() {
+        for (i in keys.indices) tree.insert(keys[i], values[i])
+        val leftRange = (Math.random() * keys.size).toInt()
+        val rightRange = (Math.random() * (keys.size - leftRange + 1)).toInt() + leftRange
+        for (i in leftRange until rightRange) {
+            assertEquals(tree.findByKey(keys[i]), values[i])
+            tree.remove(keys[i])
+            assertTrue(checkRBTInvariant(tree))
+            assertNull(tree.findByKey(keys[i]))
+        }
+    }
 
     @Test
     fun `invariant and find after insertion`() {
@@ -154,13 +154,13 @@ class RedBlackTreeTest {
         assertEquals(tree.value, 20)
     }
 
-//    @Test
-//    fun `removing a non-existent key`() {
-//        val keys = listOf(10, 20, 30)
-//        keys.forEach { tree.insert(it, it) }
-//        val deletedKeys = listOf(2, 40, 25)
-//        deletedKeys.forEach { tree.remove(it) }
-//        keys.forEach { assertEquals(tree.findByKey(it), it) }
-//        deletedKeys.forEach { assertNull(tree.findByKey(it)) }
-//    }
+    @Test
+    fun `removing a non-existent key`() {
+        val keys = listOf(10, 20, 30)
+        keys.forEach { tree.insert(it, it) }
+        val deletedKeys = listOf(2, 40, 25)
+        deletedKeys.forEach { tree.remove(it) }
+        keys.forEach { assertEquals(tree.findByKey(it), it) }
+        deletedKeys.forEach { assertNull(tree.findByKey(it)) }
+    }
 }

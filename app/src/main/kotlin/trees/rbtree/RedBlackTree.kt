@@ -1,7 +1,6 @@
 package trees.rbtree
 
 import trees.AbstractBST
-import trees.findMinimumTree
 
 class RedBlackTree<K : Comparable<K>, V> : AbstractBST<K, V, RedBlackTree<K, V>>() {
     enum class Color {
@@ -9,8 +8,7 @@ class RedBlackTree<K : Comparable<K>, V> : AbstractBST<K, V, RedBlackTree<K, V>>
     }
 
     internal var root = this
-    var color: Color = Color.BLACK
-        internal set
+    internal var color: Color = Color.BLACK
 
     override fun findByKey(key: K): V? {
         return findByKey(root, key)
@@ -123,7 +121,7 @@ class RedBlackTree<K : Comparable<K>, V> : AbstractBST<K, V, RedBlackTree<K, V>>
                     if (rightSibling.color == Color.RED) {
                         var leftChildOfRightSibling = rightSibling.left ?: throw IllegalStateException("left child of right sibling can not be null")
                         if (leftChildOfRightSibling.left?.color == Color.RED || leftChildOfRightSibling.right?.color == Color.RED) {
-                            if (leftChildOfRightSibling.right?.color == Color.BLACK) {
+                            if (leftChildOfRightSibling.right == null || leftChildOfRightSibling.right?.color == Color.BLACK) {
                                 leftChildOfRightSibling.reverseColor()
                                 leftChildOfRightSibling.left?.reverseColor()
                                 leftChildOfRightSibling = rightRotate(leftChildOfRightSibling)
@@ -173,7 +171,7 @@ class RedBlackTree<K : Comparable<K>, V> : AbstractBST<K, V, RedBlackTree<K, V>>
                     if (leftSibling.color == Color.RED) {
                         var rightChildOfLeftSibling = leftSibling.right ?: throw IllegalStateException("right child of left sibling can not be null")
                         if (rightChildOfLeftSibling.left?.color == Color.RED || rightChildOfLeftSibling.right?.color == Color.RED) {
-                            if (rightChildOfLeftSibling.left?.color == Color.BLACK) {
+                            if (rightChildOfLeftSibling.left == null || rightChildOfLeftSibling.left?.color == Color.BLACK) {
                                 rightChildOfLeftSibling.reverseColor()
                                 rightChildOfLeftSibling.right?.reverseColor()
                                 rightChildOfLeftSibling = leftRotate(rightChildOfLeftSibling)
@@ -235,13 +233,6 @@ class RedBlackTree<K : Comparable<K>, V> : AbstractBST<K, V, RedBlackTree<K, V>>
             replaceSubtree(givenTree, givenTree.right)
         }
         return givenTree
-    }
-
-    override fun deleteTreeWithTwoSubtrees(givenTree: RedBlackTree<K, V>): RedBlackTree<K, V> {
-        val tmpMinimumTree = findMinimumTree(givenTree.right ?: throw Exception("right subtree can not be null"))
-        givenTree.key = tmpMinimumTree.key
-        givenTree.value = tmpMinimumTree.value
-        return removeSubtree(tmpMinimumTree)
     }
 
     override fun remove(key: K) {
