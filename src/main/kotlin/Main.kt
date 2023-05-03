@@ -203,7 +203,8 @@ fun main() = application {
                 button {
                     label = "    Remove Node     "
                     clicked {
-                        removeNode(input)
+                        if (input.isNotEmpty())
+                            removeNode(input)
                         input = ""
                     }
                 }
