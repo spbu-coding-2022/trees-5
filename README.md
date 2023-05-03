@@ -24,10 +24,10 @@ line:
 
 ```bash
 # Clone this repository
-git clone https://github.com/spbu-coding-2022/trees-2.git
+git clone https://github.com/spbu-coding-2022/trees-5.git
 
 # Go into the repository
-cd trees-2
+cd trees-5
 
 # Build
 ./gradlew assemble      
