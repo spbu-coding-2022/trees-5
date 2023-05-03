@@ -24,10 +24,10 @@ line:
 
 ```bash
 # Clone this repository
-git clone https://github.com/spbu-coding-2022/trees-2.git
+git clone https://github.com/spbu-coding-2022/trees-5.git
 
 # Go into the repository
-cd trees-2
+cd trees-5
 
 # Build
 ./gradlew assemble      
@@ -53,7 +53,7 @@ First, select the type of binary tree you will work with, then start entering va
 
 ### Working with a binary tree
 
-You can work on all third types of binary trees at the same time.
+You can work on all third types of binary trees at the s~~~~ame time.
 What type the tree will have is determined by the first entered value, if it is a string value, then the comparison will be defined for strings, otherwise the tree will be numeric and after string keys simply will not be inserted into it. 
 To show the value of the nodes, press the left shift, pressing again, the keys will show again.
 To delete or find a node with a specific key, you must enter the key and click the remove or find button.
