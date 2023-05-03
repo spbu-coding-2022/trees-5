@@ -1,2 +1,8 @@
 rootProject.name = "trees-5"
-include("app")
+
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenLocal()
+    }
+}
