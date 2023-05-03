@@ -15,7 +15,6 @@ import kotlin.random.Random
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AvlTreeTest {
-
     private fun checkAVLInvariant(tree: AVLTree<Int, Int>): Boolean {
 
         /**

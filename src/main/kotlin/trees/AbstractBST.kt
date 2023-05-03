@@ -1,6 +1,11 @@
 package trees
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import trees.bstree.BinarySearchTree
+import kotlin.math.max
+import kotlin.math.pow
+import java.util.Queue
+import java.util.LinkedList
 
 @Suppress("UNCHECKED_CAST")
 abstract class AbstractBST<K : Comparable<K>, V, Subtree : AbstractBST<K, V, Subtree>> {
@@ -223,3 +228,41 @@ abstract class AbstractBST<K : Comparable<K>, V, Subtree : AbstractBST<K, V, Sub
         return currentTree
     }
 }
+fun <K: Comparable<K>, V, Subtree: AbstractBST<K, V, Subtree>> height(tree: Subtree?) : Int
+{
+    if (tree == null)
+        return 0
+    else
+        return max(height(tree.left), height(tree.right)) + 1
+}
+
+fun <K: Comparable<K>, V, Subtree: AbstractBST<K, V, Subtree>> treeLevelOrder(tree: Subtree): MutableList<Subtree?> {
+    val treeList = mutableListOf<Subtree?>()
+    val queue: Queue<Subtree> = LinkedList()
+    val nullNode = BinarySearchTree<Int, Int>()
+    val height = height(tree)
+    var numberOfNodes = 2.0.pow(height).toInt() - 1
+    queue.add(tree)
+    while (numberOfNodes > 0) {
+        val currentTree = queue.poll()
+        if (currentTree == nullNode as Subtree) {
+            numberOfNodes--
+            treeList.add(null)
+            queue.add(nullNode as Subtree)
+            queue.add(nullNode as Subtree)
+            continue
+        }
+        treeList.add(currentTree)
+        if (currentTree.left != null)
+            queue.add(currentTree.left)
+        else
+            queue.add(nullNode as Subtree)
+        if (currentTree.right != null)
+            queue.add(currentTree.right)
+        else
+            queue.add(nullNode as Subtree)
+        numberOfNodes--
+    }
+    return treeList
+}
+
