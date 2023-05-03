@@ -16,7 +16,7 @@ fun main() = application {
         width = 1280
         height = 720
         windowResizable = true
-        title = "OPENRNDR Example"
+        title = "Trees Renderer"
     }
 
     var input = ""
