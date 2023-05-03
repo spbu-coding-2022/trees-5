@@ -47,7 +47,7 @@ If you got trouble during installation or for more information visit [site](http
 
 ## More information about the app
 
-### Рow to get started with tree
+### How to get started with tree
 
 First, select the type of binary tree you will work with, then start entering values of keys to insert into the tree. If you want to insert a key and a value, then you need to type the value of the key in the input line first, then use the separator in the form ';' and write the value to be stored with the key. 
 
@@ -63,7 +63,7 @@ If you want to hide the tree, then this can be done by pressing the space bar.
 ![avl-example](https://sun9-21.userapi.com/impg/XkXWgKUqZOZSkT0PjiyAsERwKfYLCe8cR5UMgA/j7LzFEnBzpI.jpg?size=1280x750&quality=95&sign=119cf3967c051167d8036c64db8847b9&type=album)
 ![rbt-example](https://sun9-78.userapi.com/impg/FLvdcvXfdG24hI8_dbkY4BzhB87dLmCb0MzJ5A/_oPqObEW78U.jpg?size=1280x750&quality=95&sign=092fd209f0c2e7496ae780ea6caf3801&type=album)
 
-
+~~~~
 ---
 
 ### License
