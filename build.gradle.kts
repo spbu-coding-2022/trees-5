@@ -91,6 +91,7 @@ plugins {
     alias(libs.plugins.shadow)
     alias(libs.plugins.runtime)
     alias(libs.plugins.gitarchive.tomarkdown).apply(false)
+    jacoco
 }
 
 repositories {
@@ -132,6 +133,22 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required.set(true)
+        xml.outputLocation.set(layout.buildDirectory.file("jacoco/report.xml"))
+        csv.required.set(true)
+        csv.outputLocation.set(layout.buildDirectory.file("jacoco/report.csv"))
+        html.required.set(true)
+        html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
+    }
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //
